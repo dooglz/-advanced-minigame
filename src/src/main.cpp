@@ -47,7 +47,7 @@ void Loadcontent() {
   playerSprite.setTexture(*textures[0]);
   playerSprite.setPosition(512, 256);
   bulletsprite.setTexture(*textures[10]);
-
+  bulletsprite.setPosition(0, -128.0f);
   for (size_t i = 0; i < MAX_ENEMIES; i++) {
     enemies[i].setTexture(*textures[(i % 7) + 3]);
     enemies[i].setPosition(GetNewEnemyPos());
@@ -115,12 +115,14 @@ void Update(sf::RenderWindow &window) {
     // if the B button is pressed fire a bullet
     if (e.JoystickButtonPressed) {
 
-      if (sf::Joystick::isButtonPressed(0, 1)) {
+      if (bulletsprite.getPosition().y <= -128.0f &&
+          sf::Joystick::isButtonPressed(0, 1)) {
         bulletsprite.setPosition(playerSprite.getPosition().x + 30,
                                  playerSprite.getPosition().y - 1);
       }
     }
   }
+
   // joystick input
   if (sf::Joystick::isConnected(0)) {
     float joystickX = sf::Joystick::getAxisPosition(0, sf::Joystick::X);
@@ -132,14 +134,17 @@ void Update(sf::RenderWindow &window) {
     if (abs(joystickY) > 40.0f) {
       moveDirection += sf::Vector2f(0, ((signbit(joystickY)) * -2) + 1);
     }
+  }
 
-    Normalize(moveDirection);
-    moveDirection = (moveDirection * playerMoveSpeed) * (float)deltaPercent;
+  Normalize(moveDirection);
+  moveDirection = (moveDirection * playerMoveSpeed) * (float)deltaPercent;
 
-    playerSprite.setPosition(playerSprite.getPosition() + moveDirection);
+  playerSprite.setPosition(playerSprite.getPosition() + moveDirection);
 
+  if (bulletsprite.getPosition().y > -128.0f) {
     bulletsprite.setPosition(bulletsprite.getPosition().x,
-                             bulletsprite.getPosition().y - tick);
+                             bulletsprite.getPosition().y -
+                                 1000.0 * deltaPercent);
   }
 
   for (size_t i = 0; i < MAX_ENEMIES; i++) {
@@ -150,13 +155,13 @@ void Update(sf::RenderWindow &window) {
             enemies[i].getPosition() +
             sf::Vector2f(sinf(tick + i) * 100.0 * deltaPercent,
                          100.0 * deltaPercent));
-		//collisions
-		if (bulletsprite.getGlobalBounds().intersects(enemies[i].getGlobalBounds())){
-			enemies[i].setPosition(GetNewEnemyPos());
-			score += 100;
-		}
-      } 
-	  else {
+        // collisions
+        if (bulletsprite.getGlobalBounds().intersects(
+                enemies[i].getGlobalBounds())) {
+          enemies[i].setPosition(GetNewEnemyPos());
+          score += 100;
+        }
+      } else {
         // ofscreen kill
         enemies[i].setPosition(GetNewEnemyPos());
       }
