@@ -39,10 +39,49 @@ void Update(sf::RenderWindow &window) {
   static float tick = 0.0f;
   tick += 0.01f;
   sf::Event e;
+
   while (window.pollEvent(e)) {
     if (e.type == sf::Event::Closed)
       window.close();
+
+	//keyboard event handling
+	if (e.type == sf::Event::KeyPressed) {
+		if (e.key.code == sf::Keyboard::Escape)
+		{
+			window.close();
+		}
+
+		if (e.key.code == sf::Keyboard::W)
+		{
+			playerSprite.setPosition(playerSprite.getPosition().x, playerSprite.getPosition().y - tick);
+		}
+
+		if (e.key.code == sf::Keyboard::S)
+		{
+			playerSprite.setPosition(playerSprite.getPosition().x, playerSprite.getPosition().y + tick);
+		}
+		if (e.key.code == sf::Keyboard::A)
+		{
+			playerSprite.setPosition(playerSprite.getPosition().x - tick, playerSprite.getPosition().y);
+		}
+		if (e.key.code == sf::Keyboard::D)
+		{
+			playerSprite.setPosition(playerSprite.getPosition().x + tick, playerSprite.getPosition().y);
+		}
+	}
+
+	//joystick input
+	 if (sf::Joystick::isConnected(0))
+	{
+		float joystickX = sf::Joystick::getAxisPosition(0, sf::Joystick::X);
+		float joystickY = sf::Joystick::getAxisPosition(0, sf::Joystick::Y);
+
+		playerSprite.setPosition(playerSprite.getPosition().x + (joystickX * 0.1), playerSprite.getPosition().y + (joystickY * 0.1));
+
+	} 
+
   }
+
   for (size_t i = 0; i < 16; i++) {
     enemies[i].setPosition(enemies[i].getPosition() +
                            sf::Vector2f(sinf(tick + i), 1));
