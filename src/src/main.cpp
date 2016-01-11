@@ -138,6 +138,7 @@ void Update(sf::RenderWindow &window) {
 		//collisions
 		if (bulletsprite.getGlobalBounds().intersects(enemies[i].getGlobalBounds())){
 			enemies[i].setPosition(GetNewEnemyPos());
+			score += 100;
 		}
       } 
 	  else {
