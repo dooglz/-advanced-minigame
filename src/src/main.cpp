@@ -135,7 +135,12 @@ void Update(sf::RenderWindow &window) {
             enemies[i].getPosition() +
             sf::Vector2f(sinf(tick + i) * 100.0 * deltaPercent,
                          100.0 * deltaPercent));
-      } else {
+		//collisions
+		if (bulletsprite.getGlobalBounds().intersects(enemies[i].getGlobalBounds())){
+			enemies[i].setPosition(GetNewEnemyPos());
+		}
+      } 
+	  else {
         // ofscreen kill
         enemies[i].setPosition(GetNewEnemyPos());
       }
