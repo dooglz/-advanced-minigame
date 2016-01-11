@@ -1,5 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <chrono>
+#include <thread>
 using namespace std;
 
 static const string textureNames[]{
@@ -38,11 +40,19 @@ void Loadcontent() {
   }
 }
 
+static chrono::high_resolution_clock::time_point previous;
 void Update(sf::RenderWindow &window) {
-  //const auto delta = dt.AsSeconds();
+ 
+  chrono::high_resolution_clock::time_point now = chrono::high_resolution_clock::now();
+  const unsigned int delta = (std::chrono::duration_cast<std::chrono::duration<int, std::nano>>(now - previous)).count();
+
+  const double deltaPercent = (((double)delta) / 1000000000.0); //delta as a percentage of 1 second
+  previous = now;
+  cout << currentEnemies << " - " << delta << " - " << deltaPercent << endl;
+
   static float tick = 0.0f;
   currentEnemies = (unsigned int)ceil(tick * 0.1f);
-cout << currentEnemies << " - " << tick << endl;
+
   tick += 0.01f;
   sf::Event e;
 
@@ -82,7 +92,7 @@ cout << currentEnemies << " - " << tick << endl;
 		float joystickX = sf::Joystick::getAxisPosition(0, sf::Joystick::X);
 		float joystickY = sf::Joystick::getAxisPosition(0, sf::Joystick::Y);
 
-		playerSprite.setPosition(playerSprite.getPosition().x + (joystickX * 0.1), playerSprite.getPosition().y + (joystickY * 0.1));
+		playerSprite.setPosition(playerSprite.getPosition().x + (joystickX * deltaPercent), playerSprite.getPosition().y + (joystickY * deltaPercent));
 
 	} 
 
@@ -90,7 +100,7 @@ cout << currentEnemies << " - " << tick << endl;
 
   for (size_t i = 0; i < 16; i++) {
     enemies[i].setPosition(enemies[i].getPosition() +
-                           sf::Vector2f(sinf(tick + i), 1));
+                           sf::Vector2f(sinf(tick + i) * 10 *deltaPercent, 10 * deltaPercent));
   }
 }
 
@@ -109,6 +119,7 @@ int main() {
   Loadcontent();
   sf::RenderWindow window(sf::VideoMode(1024, 768), "Main Window");
   window.setVerticalSyncEnabled(true);
+  previous = chrono::high_resolution_clock::now();
   while (window.isOpen()) {
     Update(window);
     Render(window);
