@@ -1,0 +1,75 @@
+### CMake ###
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Makefile
+cmake_install.cmake
+install_manifest.txt
+
+#Doxygen
+docs/html/
+
+#Visual studio junk files
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio 2015 cache/options directory
+.vs/
+*_i.c
+*_p.c
+*_i.h
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# Visual C++ cache files
+ipch/
+*.aps
+*.ncb
+*.opensdf
+*.sdf
+*.cachefile
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+
+#.obj in resouces folder are 3d models, save them.
+!res/*.obj
+!res/*/*.obj
+!res/**/*.obj
+
+#Don't save anything in the build dir
+bin/*/
+bin/*
+build/*/
+build/*
+temp/*/
+temp/*
+
+bin/*
+*.opendb
+sce_module/
+src/build/
