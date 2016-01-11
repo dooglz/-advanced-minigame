@@ -15,10 +15,13 @@ static sf::Texture *textures[10];
 
 static const string filepath = "..\\res/img/";
 
-static sf::Sprite enemies[16];
+#define MAX_ENEMIES 255
+static unsigned int currentEnemies = 0;
+static sf::Sprite enemies[MAX_ENEMIES];
 
-static unsigned int maxEnemies = 16;
-static unsigned int currentEnemies = 16;
+static sf::Vector2f GetNewEnemyPos() {
+  return sf::Vector2f(rand() % 1024, -128.0f);
+}
 
 sf::Sprite playerSprite;
 sf::Texture *playerTexture;
@@ -34,73 +37,97 @@ void Loadcontent() {
   playerSprite.setTexture(*textures[0]);
   playerSprite.setPosition(512, 256);
 
-  for (size_t i = 0; i < 16; i++) {
+  for (size_t i = 0; i < MAX_ENEMIES; i++) {
     enemies[i].setTexture(*textures[(i % 7) + 3]);
-    enemies[i].setPosition(sf::Vector2f((1024 / 16) * i, (i % 4) * 20));
+    enemies[i].setPosition(GetNewEnemyPos());
   }
 }
 
 static chrono::high_resolution_clock::time_point previous;
-void Update(sf::RenderWindow &window) {
- 
-  chrono::high_resolution_clock::time_point now = chrono::high_resolution_clock::now();
-  const unsigned int delta = (std::chrono::duration_cast<std::chrono::duration<int, std::nano>>(now - previous)).count();
+static unsigned int score;
 
-  const double deltaPercent = (((double)delta) / 1000000000.0); //delta as a percentage of 1 second
+void Update(sf::RenderWindow &window) {
+
+  chrono::high_resolution_clock::time_point now =
+      chrono::high_resolution_clock::now();
+  const unsigned int delta =
+      (std::chrono::duration_cast<std::chrono::duration<int, std::nano>>(
+           now - previous))
+          .count();
+
+  const double deltaPercent =
+      (((double)delta) / 1000000000.0); // delta as a percentage of 1 second
   previous = now;
-  cout << currentEnemies << " - " << delta << " - " << deltaPercent << endl;
 
   static float tick = 0.0f;
-  currentEnemies = (unsigned int)ceil(tick * 0.1f);
+  tick += deltaPercent * 10.0;
+  score = (unsigned int)ceil(tick);
+  currentEnemies = (unsigned int)ceil(tick * 0.6f) + 1;
 
-  tick += 0.01f;
+  cout << score << " - " << currentEnemies << " - " << delta << " - "
+       << deltaPercent << endl;
+
   sf::Event e;
 
   while (window.pollEvent(e)) {
     if (e.type == sf::Event::Closed)
       window.close();
 
-	//keyboard event handling
-	if (e.type == sf::Event::KeyPressed) {
-		if (e.key.code == sf::Keyboard::Escape)
-		{
-			window.close();
-		}
+    // keyboard event handling
+    if (e.type == sf::Event::KeyPressed) {
+      if (e.key.code == sf::Keyboard::Escape) {
+        window.close();
+      }
 
-		if (e.key.code == sf::Keyboard::W)
-		{
-			playerSprite.setPosition(playerSprite.getPosition().x, playerSprite.getPosition().y - tick);
-		}
+      if (e.key.code == sf::Keyboard::W) {
+        playerSprite.setPosition(playerSprite.getPosition().x,
+                                 playerSprite.getPosition().y - tick);
+      }
 
-		if (e.key.code == sf::Keyboard::S)
-		{
-			playerSprite.setPosition(playerSprite.getPosition().x, playerSprite.getPosition().y + tick);
-		}
-		if (e.key.code == sf::Keyboard::A)
-		{
-			playerSprite.setPosition(playerSprite.getPosition().x - tick, playerSprite.getPosition().y);
-		}
-		if (e.key.code == sf::Keyboard::D)
-		{
-			playerSprite.setPosition(playerSprite.getPosition().x + tick, playerSprite.getPosition().y);
-		}
-	}
+      if (e.key.code == sf::Keyboard::S) {
+        playerSprite.setPosition(playerSprite.getPosition().x,
+                                 playerSprite.getPosition().y + tick);
+      }
+      if (e.key.code == sf::Keyboard::A) {
+        playerSprite.setPosition(playerSprite.getPosition().x - tick,
+                                 playerSprite.getPosition().y);
+      }
+      if (e.key.code == sf::Keyboard::D) {
+        playerSprite.setPosition(playerSprite.getPosition().x + tick,
+                                 playerSprite.getPosition().y);
+      }
+    }
 
-	//joystick input
-	 if (sf::Joystick::isConnected(0))
-	{
-		float joystickX = sf::Joystick::getAxisPosition(0, sf::Joystick::X);
-		float joystickY = sf::Joystick::getAxisPosition(0, sf::Joystick::Y);
+    // joystick input
+    if (sf::Joystick::isConnected(0)) {
+      float joystickX = sf::Joystick::getAxisPosition(0, sf::Joystick::X);
+      float joystickY = sf::Joystick::getAxisPosition(0, sf::Joystick::Y);
 
-		playerSprite.setPosition(playerSprite.getPosition().x + (joystickX * deltaPercent), playerSprite.getPosition().y + (joystickY * deltaPercent));
-
-	} 
-
+      playerSprite.setPosition(
+          playerSprite.getPosition().x + (joystickX * deltaPercent),
+          playerSprite.getPosition().y + (joystickY * deltaPercent));
+    }
   }
 
-  for (size_t i = 0; i < 16; i++) {
-    enemies[i].setPosition(enemies[i].getPosition() +
-                           sf::Vector2f(sinf(tick + i) * 10 *deltaPercent, 10 * deltaPercent));
+  for (size_t i = 0; i < MAX_ENEMIES; i++) {
+    if (i < currentEnemies) {
+      // if not dead, move
+      if (enemies[i].getPosition().y < 700.0) {
+        enemies[i].setPosition(
+            enemies[i].getPosition() +
+            sf::Vector2f(sinf(tick + i) * 100.0 * deltaPercent,
+                         100.0 * deltaPercent));
+      } else {
+        // ofscreen kill
+        enemies[i].setPosition(GetNewEnemyPos());
+      }
+    } else {
+      // if alive
+      if (enemies[i].getPosition().y != -128.0f) {
+        // kill
+        enemies[i].setPosition(GetNewEnemyPos());
+      }
+    }
   }
 }
 
@@ -108,7 +135,7 @@ void Render(sf::RenderWindow &window) {
   window.clear();
 
   window.draw(playerSprite);
-  for (size_t i = 0; i < 16; i++) {
+  for (size_t i = 0; i < MAX_ENEMIES; i++) {
     window.draw(enemies[i]);
   }
 
