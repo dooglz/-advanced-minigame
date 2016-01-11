@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-
+#include <iostream>
 using namespace std;
 
 static const string textureNames[]{
@@ -14,6 +14,9 @@ static sf::Texture *textures[10];
 static const string filepath = "..\\res/img/";
 
 static sf::Sprite enemies[16];
+
+static unsigned int maxEnemies = 16;
+static unsigned int currentEnemies = 16;
 
 sf::Sprite playerSprite;
 sf::Texture *playerTexture;
@@ -36,7 +39,10 @@ void Loadcontent() {
 }
 
 void Update(sf::RenderWindow &window) {
+  //const auto delta = dt.AsSeconds();
   static float tick = 0.0f;
+  currentEnemies = (unsigned int)ceil(tick * 0.1f);
+cout << currentEnemies << " - " << tick << endl;
   tick += 0.01f;
   sf::Event e;
   while (window.pollEvent(e)) {
