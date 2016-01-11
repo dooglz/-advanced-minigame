@@ -17,7 +17,7 @@ static const string textureNames[]{"spaceship1.png",
                                    "bullet.png"};
 
 static sf::Texture *textures[11];
-
+static sf::Font myfont;
 static const string filepath = "..\\res/img/";
 
 #define MAX_ENEMIES 255
@@ -33,6 +33,8 @@ sf::Texture *playerTexture;
 sf::Sprite bulletsprite;
 sf::Texture *bulletTexture;
 void Loadcontent() {
+
+	myfont.loadFromFile("C:\Windows\Fonts\ARIALUNI");
 
   for (size_t i = 0; i < 11; i++) {
     textures[i] = new sf::Texture();
