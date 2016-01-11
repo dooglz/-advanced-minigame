@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <iostream>
 #include <chrono>
 #include <thread>
@@ -23,6 +24,8 @@ static const string filepath = "..\\res/img/";
 #define MAX_ENEMIES 255
 static unsigned int currentEnemies = 0;
 static sf::Sprite enemies[MAX_ENEMIES];
+
+float playerMoveSpeed = 600.0f;
 
 static sf::Vector2f GetNewEnemyPos() {
   return sf::Vector2f(rand() % 1024, -128.0f);
@@ -50,6 +53,15 @@ void Loadcontent() {
     enemies[i].setPosition(GetNewEnemyPos());
   }
 }
+void Normalize(sf::Vector2f &v) {
+  auto length = sqrt(v.x * v.x + v.y * v.y);
+  if (length == 0.0f) {
+    return;
+  }
+  // normalize vector
+  v.x /= length;
+  v.y /= length;
+}
 
 static chrono::high_resolution_clock::time_point previous;
 static unsigned int score;
@@ -72,10 +84,11 @@ void Update(sf::RenderWindow &window) {
   score = (unsigned int)ceil(tick);
   currentEnemies = (unsigned int)ceil(tick * 0.6f) + 1;
 
-  cout << score << " - " << currentEnemies << " - " << delta << " - "
-       << deltaPercent << endl;
+  //  cout << score << " - " << currentEnemies << " - " << delta << " - " <<
+  //  deltaPercent << endl;
 
   sf::Event e;
+  sf::Vector2f moveDirection(0, 0);
 
   while (window.pollEvent(e)) {
     if (e.type == sf::Event::Closed)
@@ -86,45 +99,47 @@ void Update(sf::RenderWindow &window) {
       if (e.key.code == sf::Keyboard::Escape) {
         window.close();
       }
-
-      if (e.key.code == sf::Keyboard::W) {
-        playerSprite.setPosition(playerSprite.getPosition().x,
-                                 playerSprite.getPosition().y - tick);
+      if (e.key.code == sf::Keyboard::W || e.key.code == sf::Keyboard::Up) {
+        moveDirection += sf::Vector2f(0, -1);
       }
-
-      if (e.key.code == sf::Keyboard::S) {
-        playerSprite.setPosition(playerSprite.getPosition().x,
-                                 playerSprite.getPosition().y + tick);
+      if (e.key.code == sf::Keyboard::S || e.key.code == sf::Keyboard::Down) {
+        moveDirection += sf::Vector2f(0, 1);
       }
-      if (e.key.code == sf::Keyboard::A) {
-        playerSprite.setPosition(playerSprite.getPosition().x - tick,
-                                 playerSprite.getPosition().y);
+      if (e.key.code == sf::Keyboard::A || e.key.code == sf::Keyboard::Left) {
+        moveDirection += sf::Vector2f(-1, 0);
       }
-      if (e.key.code == sf::Keyboard::D) {
-        playerSprite.setPosition(playerSprite.getPosition().x + tick,
-                                 playerSprite.getPosition().y);
+      if (e.key.code == sf::Keyboard::D || e.key.code == sf::Keyboard::Right) {
+        moveDirection += sf::Vector2f(1, 0);
       }
     }
-    // joystick input
-    if (sf::Joystick::isConnected(0)) {
-      float joystickX = sf::Joystick::getAxisPosition(0, sf::Joystick::X);
-      float joystickY = sf::Joystick::getAxisPosition(0, sf::Joystick::Y);
+    // if the B button is pressed fire a bullet
+    if (e.JoystickButtonPressed) {
 
-      playerSprite.setPosition(playerSprite.getPosition().x + (joystickX * 0.1),
-                               playerSprite.getPosition().y +
-                                   (joystickY * 0.1));
-
-      // if the B button is pressed fire a bullet
-      if (e.JoystickButtonPressed) {
-        if (e.joystickButton.button == 0) {
-          bulletsprite.setPosition(playerSprite.getPosition().x + 30,
-                                   playerSprite.getPosition().y - 1);
-        }
+      if (sf::Joystick::isButtonPressed(0, 1)) {
+        bulletsprite.setPosition(playerSprite.getPosition().x + 30,
+                                 playerSprite.getPosition().y - 1);
       }
-
-      bulletsprite.setPosition(bulletsprite.getPosition().x,
-                               bulletsprite.getPosition().y - tick);
     }
+  }
+  // joystick input
+  if (sf::Joystick::isConnected(0)) {
+    float joystickX = sf::Joystick::getAxisPosition(0, sf::Joystick::X);
+    float joystickY = sf::Joystick::getAxisPosition(0, sf::Joystick::Y);
+
+    if (abs(joystickX) > 40.0f) {
+      moveDirection += sf::Vector2f(((signbit(joystickX)) * -2) + 1, 0);
+    }
+    if (abs(joystickY) > 40.0f) {
+      moveDirection += sf::Vector2f(0, ((signbit(joystickY)) * -2) + 1);
+    }
+
+    Normalize(moveDirection);
+    moveDirection = (moveDirection * playerMoveSpeed) * (float)deltaPercent;
+
+    playerSprite.setPosition(playerSprite.getPosition() + moveDirection);
+
+    bulletsprite.setPosition(bulletsprite.getPosition().x,
+                             bulletsprite.getPosition().y - tick);
   }
 
   for (size_t i = 0; i < MAX_ENEMIES; i++) {
