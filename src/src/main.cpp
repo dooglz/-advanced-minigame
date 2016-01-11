@@ -35,10 +35,14 @@ sf::Sprite playerSprite;
 sf::Texture *playerTexture;
 sf::Sprite bulletsprite;
 sf::Texture *bulletTexture;
+sf::Text Text;
 void Loadcontent() {
 
 	myfont.loadFromFile("..\\res/fonts/AmericanCaptain.ttf");
-	sf::String();
+	Text.setFont(myfont);
+	Text.setPosition(900,0);
+	Text.setCharacterSize(24);
+	Text.setColor(sf::Color::Red);
 
 
   for (size_t i = 0; i < 11; i++) {
@@ -68,7 +72,7 @@ void Normalize(sf::Vector2f &v) {
 }
 
 static chrono::high_resolution_clock::time_point previous;
-static unsigned int score;
+static unsigned int score = 0;
 
 void Update(sf::RenderWindow &window) {
 
@@ -82,10 +86,8 @@ void Update(sf::RenderWindow &window) {
   const double deltaPercent =
       (((double)delta) / 1000000000.0); // delta as a percentage of 1 second
   previous = now;
-
   static float tick = 0.0f;
   tick += deltaPercent;
-  score = (unsigned int)ceil(tick);
   currentEnemies = (unsigned int)ceil(tick * 0.6f) + 1;
 
   //  cout << score << " - " << currentEnemies << " - " << delta << " - " <<
@@ -95,6 +97,7 @@ void Update(sf::RenderWindow &window) {
   sf::Vector2f moveDirection(0, 0);
 
   while (window.pollEvent(e)) {
+	
     if (e.type == sf::Event::Closed)
       window.close();
 
@@ -177,18 +180,23 @@ void Update(sf::RenderWindow &window) {
       }
     }
   }
+
+  Text.setString("Score =" + to_string(score));
 }
 
 void Render(sf::RenderWindow &window) {
   window.clear();
-
+ 
   window.draw(playerSprite);
   window.draw(bulletsprite);
   for (size_t i = 0; i < MAX_ENEMIES; i++) {
     window.draw(enemies[i]);
   }
 
+
+  window.draw(Text);
   window.display();
+ 
 }
 
 int main() {
