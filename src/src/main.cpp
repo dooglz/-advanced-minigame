@@ -37,7 +37,9 @@ sf::Sprite bulletsprite;
 sf::Texture *bulletTexture;
 void Loadcontent() {
 
-	myfont.loadFromFile("C:\Windows\Fonts\ARIALUNI");
+	myfont.loadFromFile("..\\res/fonts/AmericanCaptain.ttf");
+	sf::String();
+
 
   for (size_t i = 0; i < 11; i++) {
     textures[i] = new sf::Texture();
