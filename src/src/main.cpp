@@ -66,6 +66,8 @@ void Normalize(sf::Vector2f &v) {
   if (length == 0.0f) {
     return;
   }
+
+
   // normalize vector
   v.x /= length;
   v.y /= length;
@@ -118,6 +120,11 @@ void Update(sf::RenderWindow &window) {
       if (e.key.code == sf::Keyboard::D || e.key.code == sf::Keyboard::Right) {
         moveDirection += sf::Vector2f(1, 0);
       }
+	  if (bulletsprite.getPosition().y <= -128.0f && e.key.code == sf::Keyboard::Space)
+	  {
+		  bulletsprite.setPosition(playerSprite.getPosition().x + 30,
+			  playerSprite.getPosition().y - 1);
+	  }
     }
     // if the B button is pressed fire a bullet
     if (e.JoystickButtonPressed) {
@@ -169,7 +176,7 @@ void Update(sf::RenderWindow &window) {
           score += 100;
         }
       } else {
-        // ofscreen kill
+        // offscreen kill
         enemies[i].setPosition(GetNewEnemyPos());
       }
     } else {
@@ -181,12 +188,11 @@ void Update(sf::RenderWindow &window) {
     }
   }
 
-  Text.setString("Score =" + to_string(score));
+  Text.setString("Score =" + to_string(score + ceil(tick)));
 }
 
 void Render(sf::RenderWindow &window) {
   window.clear();
- 
   window.draw(playerSprite);
   window.draw(bulletsprite);
   for (size_t i = 0; i < MAX_ENEMIES; i++) {
