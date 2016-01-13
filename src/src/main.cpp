@@ -4,217 +4,326 @@
 #include <chrono>
 #include <thread>
 using namespace std;
-
-static const string textureNames[]{"spaceship1.png",
-                                   "spaceship2.png",
-                                   "spaceship3.png",
-                                   "Spaceship-Drakir1.png",
-                                   "Spaceship-Drakir2.png",
-                                   "Spaceship-Drakir3.png",
-                                   "Spaceship-Drakir4.png",
-                                   "Spaceship-Drakir5.png",
-                                   "Spaceship-Drakir6.png",
-                                   "Spaceship-Drakir7.png",
-                                   "bullet.png"};
-
-static sf::Texture *textures[11];
-static sf::Font myfont;
-static const string filepath = "..\\res/img/";
+using namespace sf;
+using namespace chrono;
 
 #define MAX_ENEMIES 255
-static unsigned int currentEnemies = 0;
-static sf::Sprite enemies[MAX_ENEMIES];
+#define DEFAULT_WINDOW_RESOULUTION_X 600  // 461
+#define DEFAULT_WINDOW_RESOULUTION_Y 1000 // 768
+#define DEFAULT_WINDOW_RESOULUTION DEFAULT_WINDOW_RESOULUTION_X, DEFAULT_WINDOW_RESOULUTION_Y
+#define GAME_WORLD_X 600
+#define GAME_WORLD_Y 1000
+#define GAME_RESOULUTION GAME_WORLD_X, GAME_WORLD_Y
 
+Vector2u scaledGameResolution;
+Vector2f scaledGameResolutionNormal;
+Vector2u scaledGameOffset;
+Vector2f scaledGameOffsetNormal;
+
+View gameView;
+
+const string filepath = "..\\res/";
+static const string textureNames[]{"img/spaceship1.png",
+                                   "img/spaceship2.png",
+                                   "img/spaceship3.png",
+                                   "img/Spaceship-Drakir1.png",
+                                   "img/Spaceship-Drakir2.png",
+                                   "img/Spaceship-Drakir3.png",
+                                   "img/Spaceship-Drakir4.png",
+                                   "img/Spaceship-Drakir5.png",
+                                   "img/Spaceship-Drakir6.png",
+                                   "img/Spaceship-Drakir7.png",
+                                   "img/bullet.png"};
+
+Texture *textures[11];
+Font *gameFont;
+Sprite *playerSprite;
+Sprite *bulletsprite;
+Text *scoreText;
+static Sprite *enemies[MAX_ENEMIES];
+
+static unsigned int currentEnemies = 0;
 float playerMoveSpeed = 600.0f;
- int killedeneimies = 0;
-static sf::Vector2f GetNewEnemyPos() {
-  return sf::Vector2f(rand() % 1024, -128.0f);
+unsigned int score = 0;
+float runTime = 0; // time in seconds that the game has been running
+high_resolution_clock::time_point previous;
+
+static Vector2f GetNewEnemyPos() { return Vector2f((float)(rand() % GAME_WORLD_Y), -128.0f); }
+
+void Resize(RenderWindow &window) {
+  const Vector2f win = (Vector2f)window.getSize();
+  float scale = 1.0f;
+  float scale2 = 1.0f;
+  const float GWX = (float)GAME_WORLD_X;
+  const float GWY = (float)GAME_WORLD_Y;
+  if (win.y > win.x) {
+    // wide
+    scale = win.x / GWX;
+    if (win.y < (scale * GWY)) {
+      scale2 = win.y / GWY;
+    }
+  } else {
+    // tall (or square)
+    scale = win.y / GWY;
+    if (win.x < (scale * GWX)) {
+      scale2 = win.x / GWX;
+    }
+  }
+  scale = min(scale, scale2);
+  scaledGameResolution =
+      Vector2u((unsigned int)floor(scale * GWX), (unsigned int)floor(scale * GWY));
+  scaledGameOffset = Vector2u((unsigned int)max(0.0f, (win.x - scaledGameResolution.x) * 0.5f),
+                              (unsigned int)max(0.0f, (win.y - scaledGameResolution.y) * 0.5f));
+  scaledGameResolutionNormal =
+      Vector2f((float)scaledGameResolution.x / win.x, (float)scaledGameResolution.y / win.y);
+  scaledGameOffsetNormal =
+      Vector2f((float)scaledGameOffset.x / win.x, (float)scaledGameOffset.y / win.y);
 }
 
-sf::Sprite playerSprite;
-sf::Texture *playerTexture;
-sf::Sprite bulletsprite;
-sf::Texture *bulletTexture;
-sf::Text Text;
 void Loadcontent() {
-
-	myfont.loadFromFile("..\\res/fonts/AmericanCaptain.ttf");
-	Text.setFont(myfont);
-	Text.setPosition(700,0);
-	Text.setCharacterSize(24);
-	Text.setColor(sf::Color::Red);
-
+  gameFont = new Font();
+  gameFont->loadFromFile(filepath + "/fonts/AmericanCaptain.ttf");
+  scoreText = new Text();
+  scoreText->setFont(*gameFont);
+  scoreText->setPosition(900, 0);
+  scoreText->setCharacterSize(24);
+  scoreText->setColor(Color::Red);
 
   for (size_t i = 0; i < 11; i++) {
-    textures[i] = new sf::Texture();
+    textures[i] = new Texture();
     if (!textures[i]->loadFromFile(filepath + textureNames[i])) {
       throw invalid_argument("Loading error!");
     }
   }
-
-  playerSprite.setTexture(*textures[0]);
-  playerSprite.setPosition(512, 256);
-  bulletsprite.setTexture(*textures[10]);
-  bulletsprite.setPosition(0, -128.0f);
-  for (size_t i = 0; i < MAX_ENEMIES; i++) {
-    enemies[i].setTexture(*textures[(i % 7) + 3]);
-    enemies[i].setPosition(GetNewEnemyPos());
+  playerSprite = new Sprite();
+  playerSprite->setTexture(*textures[0]);
+  playerSprite->setPosition(512, 256);
+  bulletsprite = new Sprite();
+  bulletsprite->setTexture(*textures[10]);
+  bulletsprite->setPosition(0, -128.0f);
+  for (auto &e : enemies) {
+    e = new Sprite();
+    e->setTexture(*textures[(rand() % 7) + 3]);
+    e->setPosition(GetNewEnemyPos());
   }
 }
-void Normalize(sf::Vector2f &v) {
-  auto length = sqrt(v.x * v.x + v.y * v.y);
+
+void Unload() {
+  for (auto &t : textures) {
+    delete t;
+    t = nullptr;
+  }
+  for (auto &e : enemies) {
+    delete e;
+    e = nullptr;
+  }
+  delete gameFont;
+  gameFont = nullptr;
+  delete scoreText;
+  scoreText = nullptr;
+  delete bulletsprite;
+  bulletsprite = nullptr;
+  delete playerSprite;
+  playerSprite = nullptr;
+}
+
+void Normalize(Vector2f &v) {
+  float length = sqrt(v.x * v.x + v.y * v.y);
   if (length == 0.0f) {
     return;
   }
-
-
-  // normalize vector
   v.x /= length;
   v.y /= length;
 }
 
-static chrono::high_resolution_clock::time_point previous;
-static unsigned int score = 0;
+void FireBullet() {
+  if (bulletsprite->getPosition().y <= -128.0f) {
+    bulletsprite->setPosition(playerSprite->getPosition().x + 30,
+                              playerSprite->getPosition().y - 1);
+  }
+}
+void ResetGame() {
+  score = 0;
+  runTime = 0;
+  currentEnemies = 0;
+  playerSprite->setPosition(512, 256);
+  for (auto e : enemies) {
+    e->setPosition(GetNewEnemyPos());
+  }
+}
+void PlayerDeath() {}
 
-void Update(sf::RenderWindow &window) {
+void Update(RenderWindow &window) {
 
-  chrono::high_resolution_clock::time_point now =
-      chrono::high_resolution_clock::now();
-  const unsigned int delta =
-      (std::chrono::duration_cast<std::chrono::duration<int, std::nano>>(
-           now - previous))
-          .count();
-
-  const double deltaPercent =
-      (((double)delta) / 1000000000.0); // delta as a percentage of 1 second
+  high_resolution_clock::time_point now = high_resolution_clock::now();
+  // time in nanoseconds since last update
+  const auto delta = (duration_cast<duration<unsigned int, nano>>(now - previous)).count();
+  const float deltaSeconds = ((float)delta) / 1000000000.0f;
   previous = now;
-  static float tick = 0.0f;
-  tick += deltaPercent;
-  currentEnemies = (unsigned int)ceil(tick * 0.6f) + 1;
 
-  //  cout << score << " - " << currentEnemies << " - " << delta << " - " <<
-  //  deltaPercent << endl;
+  runTime += deltaSeconds;
+  currentEnemies = min((int)ceil(runTime * 0.6f) + 1, MAX_ENEMIES);
 
-  sf::Event e;
-  sf::Vector2f moveDirection(0, 0);
+  { // Input
+    Event e;
+    Vector2f moveDirection(0, 0);
 
-  while (window.pollEvent(e)) {
-	
-    if (e.type == sf::Event::Closed)
-      window.close();
+    while (window.pollEvent(e)) {
 
-    // keyboard event handling
-    if (e.type == sf::Event::KeyPressed) {
-      if (e.key.code == sf::Keyboard::Escape) {
+      if (e.type == Event::Closed)
         window.close();
-      }
-      if (e.key.code == sf::Keyboard::W || e.key.code == sf::Keyboard::Up) {
-        moveDirection += sf::Vector2f(0, -1);
-      }
-      if (e.key.code == sf::Keyboard::S || e.key.code == sf::Keyboard::Down) {
-        moveDirection += sf::Vector2f(0, 1);
-      }
-      if (e.key.code == sf::Keyboard::A || e.key.code == sf::Keyboard::Left) {
-        moveDirection += sf::Vector2f(-1, 0);
-      }
-      if (e.key.code == sf::Keyboard::D || e.key.code == sf::Keyboard::Right) {
-        moveDirection += sf::Vector2f(1, 0);
-      }
-	  if (bulletsprite.getPosition().y <= -128.0f && e.key.code == sf::Keyboard::Space)
-	  {
-		  bulletsprite.setPosition(playerSprite.getPosition().x + 30,
-			  playerSprite.getPosition().y - 1);
-	  }
-    }
-    // if the B button is pressed fire a bullet
-    if (e.JoystickButtonPressed) {
 
-      if (bulletsprite.getPosition().y <= -128.0f &&
-          sf::Joystick::isButtonPressed(0, 1)) {
-        bulletsprite.setPosition(playerSprite.getPosition().x + 30,
-                                 playerSprite.getPosition().y - 1);
+      if (e.type == sf::Event::Resized) {
+        Resize(window);
+        gameView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
+                                       scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
+        window.setView(gameView);
+      }
+
+      // keyboard event handling
+      if (e.type == Event::KeyPressed) {
+        if (e.key.code == Keyboard::Escape) {
+          window.close();
+        } else if (e.key.code == Keyboard::Space) {
+          FireBullet();
+        } else if (e.key.code == Keyboard::B) {
+          Resize(window);
+        }
+      }
+      // if the B button is pressed fire a bullet
+      if (e.JoystickButtonPressed) {
+        if (Joystick::isButtonPressed(0, 1)) {
+          FireBullet();
+        }
       }
     }
-  }
 
-  // joystick input
-  if (sf::Joystick::isConnected(0)) {
-    float joystickX = sf::Joystick::getAxisPosition(0, sf::Joystick::X);
-    float joystickY = sf::Joystick::getAxisPosition(0, sf::Joystick::Y);
-
-    if (abs(joystickX) > 40.0f) {
-      moveDirection += sf::Vector2f(((signbit(joystickX)) * -2) + 1, 0);
+    if (Keyboard::isKeyPressed(Keyboard::Space)) {
+      FireBullet();
     }
-    if (abs(joystickY) > 40.0f) {
-      moveDirection += sf::Vector2f(0, ((signbit(joystickY)) * -2) + 1);
+
+    if (Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::W)) {
+      moveDirection += Vector2f(0, -1);
     }
-  }
+    if (Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S)) {
+      moveDirection += Vector2f(0, 1);
+    }
+    if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A)) {
+      moveDirection += Vector2f(-1, 0);
+    }
+    if (Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D)) {
+      moveDirection += Vector2f(1, 0);
+    }
 
-  Normalize(moveDirection);
-  moveDirection = (moveDirection * playerMoveSpeed) * (float)deltaPercent;
+    // joystick input
+    if (Joystick::isConnected(0)) {
+      const float joystickX = Joystick::getAxisPosition(0, Joystick::X);
+      const float joystickY = Joystick::getAxisPosition(0, Joystick::Y);
 
-  playerSprite.setPosition(playerSprite.getPosition() + moveDirection);
+      if (abs(joystickX) > 40.0f) {
+        moveDirection += Vector2f((float)((signbit(joystickX) * -2) + 1), 0);
+      }
+      if (abs(joystickY) > 40.0f) {
+        moveDirection += Vector2f(0, (float)((signbit(joystickY) * -2) + 1));
+      }
+      if (Joystick::isButtonPressed(0, 1)) {
+        FireBullet();
+      }
+    }
+    if (playerSprite->getPosition().x < 0) {
+      moveDirection.x = max(0.0f, moveDirection.x);
+    }
+    if (playerSprite->getPosition().y < 0) {
+      moveDirection.y = max(0.0f, moveDirection.y);
+    }
+    if (playerSprite->getPosition().x > (GAME_WORLD_X - playerSprite->getLocalBounds().width)) {
+      moveDirection.x = min(0.0f, moveDirection.x);
+    }
+    if (playerSprite->getPosition().y > (GAME_WORLD_Y - playerSprite->getLocalBounds().height)) {
+      moveDirection.y = min(0.0f, moveDirection.y);
+    }
+    Normalize(moveDirection);
+    moveDirection = (moveDirection * playerMoveSpeed) * deltaSeconds;
 
-  if (bulletsprite.getPosition().y > -128.0f) {
-    bulletsprite.setPosition(bulletsprite.getPosition().x,
-                             bulletsprite.getPosition().y -
-                                 1000.0 * deltaPercent);
+    playerSprite->setPosition(playerSprite->getPosition() + moveDirection);
+  } // End Input
+
+  if (bulletsprite->getPosition().y > -128.0f) {
+    bulletsprite->setPosition(bulletsprite->getPosition().x,
+                              bulletsprite->getPosition().y - 1000.0f * deltaSeconds);
   }
 
   for (size_t i = 0; i < MAX_ENEMIES; i++) {
     if (i < currentEnemies) {
       // if not dead, move
-      if (enemies[i].getPosition().y < 700.0) {
-        enemies[i].setPosition(
-            enemies[i].getPosition() +
-            sf::Vector2f(sinf(tick + i) * 100.0 * deltaPercent,
-                         100.0 * deltaPercent));
+      if (enemies[i]->getPosition().y < GAME_WORLD_X) {
+        enemies[i]->setPosition(
+            enemies[i]->getPosition() +
+            Vector2f(sinf(runTime + i) * 100.0f * deltaSeconds, 100.0f * deltaSeconds));
         // collisions
-        if (bulletsprite.getGlobalBounds().intersects(
-                enemies[i].getGlobalBounds())) {
-          enemies[i].setPosition(GetNewEnemyPos());
+        if (bulletsprite->getGlobalBounds().intersects(enemies[i]->getGlobalBounds())) {
+          enemies[i]->setPosition(GetNewEnemyPos());
           score += 100;
-		  killedeneimies += 1;
+        }
+        if (playerSprite->getGlobalBounds().intersects(enemies[i]->getGlobalBounds())) {
+          PlayerDeath();
         }
       } else {
-        // offscreen kill
-        enemies[i].setPosition(GetNewEnemyPos());
+        // enemy is offscreen, kill
+        enemies[i]->setPosition(GetNewEnemyPos());
       }
     } else {
       // if alive
-      if (enemies[i].getPosition().y != -128.0f) {
+      if (enemies[i]->getPosition().y != -128.0f) {
         // kill
-        enemies[i].setPosition(GetNewEnemyPos());
+        enemies[i]->setPosition(GetNewEnemyPos());
       }
     }
   }
 
-  Text.setString("Score =" + to_string(score + ceil(tick)) + "\n"  + "number of enemies destroyed =" + to_string(killedeneimies));
+  scoreText->setString("Score =" + to_string(score + ceil(runTime)));
 }
 
-void Render(sf::RenderWindow &window) {
-  window.clear();
-  window.draw(playerSprite);
-  window.draw(bulletsprite);
-  for (size_t i = 0; i < MAX_ENEMIES; i++) {
-    window.draw(enemies[i]);
+void Render(RenderWindow &window) {
+  window.clear(sf::Color::Black);
+
+  RectangleShape rectangle(Vector2f(0, 0));
+  rectangle.setSize(Vector2f(GAME_RESOULUTION));
+  rectangle.setFillColor(Color::Green);
+  window.draw(rectangle);
+
+  window.draw(*playerSprite);
+  window.draw(*bulletsprite);
+  for (size_t i = 0; i < currentEnemies; i++) {
+    window.draw(*enemies[i]);
   }
-
-
-  window.draw(Text);
+  window.draw(*scoreText);
   window.display();
- 
 }
 
 int main() {
-  Loadcontent();
-  sf::RenderWindow window(sf::VideoMode(1024, 768), "Main Window");
-  window.setVerticalSyncEnabled(true);
-  previous = chrono::high_resolution_clock::now();
-  while (window.isOpen()) {
 
-	Update(window);
-    Render(window);
+  Loadcontent();
+  RenderWindow *window =
+      new RenderWindow(VideoMode(DEFAULT_WINDOW_RESOULUTION), "Advanced Minigame");
+  window->setVerticalSyncEnabled(true);
+  Resize(*window);
+
+  // let's define a view
+  gameView = View(FloatRect(0, 0, GAME_RESOULUTION));
+  gameView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
+                                 scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
+  // activate it
+  window->setView(gameView);
+
+  previous = high_resolution_clock::now();
+
+  while (window->isOpen()) {
+    Update(*window);
+    Render(*window);
   }
+  Unload();
+  delete window;
+  window = nullptr;
   return 0;
 }
