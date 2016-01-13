@@ -8,12 +8,12 @@ using namespace sf;
 using namespace chrono;
 
 #define MAX_ENEMIES 255
-#define DEFAULT_WINDOW_RESOULUTION_X 461
-#define DEFAULT_WINDOW_RESOULUTION_Y 768
-#define DEFAULT_WINDOW_RESOULUTION DEFAULT_WINDOW_RESOULUTION_X,DEFAULT_WINDOW_RESOULUTION_Y
+#define DEFAULT_WINDOW_RESOULUTION_X 600  // 461
+#define DEFAULT_WINDOW_RESOULUTION_Y 1000 // 768
+#define DEFAULT_WINDOW_RESOULUTION DEFAULT_WINDOW_RESOULUTION_X, DEFAULT_WINDOW_RESOULUTION_Y
 #define GAME_WORLD_X 600
 #define GAME_WORLD_Y 1000
-#define GAME_RESOULUTION GAME_WORLD_X,GAME_WORLD_Y
+#define GAME_RESOULUTION GAME_WORLD_X, GAME_WORLD_Y
 
 Vector2u scaledGameResolution;
 Vector2f scaledGameResolutionNormal;
@@ -48,36 +48,36 @@ unsigned int score = 0;
 float runTime = 0; // time in seconds that the game has been running
 high_resolution_clock::time_point previous;
 
-static Vector2f GetNewEnemyPos() { return Vector2f(rand() % GAME_WORLD_Y, -128.0f); }
+static Vector2f GetNewEnemyPos() { return Vector2f((float)(rand() % GAME_WORLD_Y), -128.0f); }
 
 void Resize(RenderWindow &window) {
-	const Vector2f win = (Vector2f)window.getSize();
-	float scale = 1.0f;
-	float scale2 = 1.0f;
-	const float GWX = (float)GAME_WORLD_X;
-	const float GWY = (float)GAME_WORLD_Y;
-	if (win.y > win.x) {
-		//wide
-		scale = win.x / GWX;
-		if (win.y < (scale * GWY)) {
-			scale2 = win.y / GWY;
-		}
-	} else {
-		//tall (or square)
-		scale = win.y / GWY;
-		if (win.x < (scale *GWX)) {
-			scale2 = win.x / GWX;
-		}
-	}
-	scale = min(scale, scale2);
-	scaledGameResolution = Vector2u((unsigned int)floor(scale * GWX),
-									(unsigned int)floor(scale * GWY));
-	scaledGameOffset = Vector2u((unsigned int)max(0.0f,(win.x - scaledGameResolution.x) *0.5f), 
-								(unsigned int)max(0.0f,(win.y - scaledGameResolution.y) *0.5f));
-	scaledGameResolutionNormal = Vector2f((float)scaledGameResolution.x / win.x, 
-										  (float)scaledGameResolution.y / win.y );
-	scaledGameOffsetNormal = Vector2f((float)scaledGameOffset.x / win.x,
-									  (float)scaledGameOffset.y / win.y);
+  const Vector2f win = (Vector2f)window.getSize();
+  float scale = 1.0f;
+  float scale2 = 1.0f;
+  const float GWX = (float)GAME_WORLD_X;
+  const float GWY = (float)GAME_WORLD_Y;
+  if (win.y > win.x) {
+    // wide
+    scale = win.x / GWX;
+    if (win.y < (scale * GWY)) {
+      scale2 = win.y / GWY;
+    }
+  } else {
+    // tall (or square)
+    scale = win.y / GWY;
+    if (win.x < (scale * GWX)) {
+      scale2 = win.x / GWX;
+    }
+  }
+  scale = min(scale, scale2);
+  scaledGameResolution =
+      Vector2u((unsigned int)floor(scale * GWX), (unsigned int)floor(scale * GWY));
+  scaledGameOffset = Vector2u((unsigned int)max(0.0f, (win.x - scaledGameResolution.x) * 0.5f),
+                              (unsigned int)max(0.0f, (win.y - scaledGameResolution.y) * 0.5f));
+  scaledGameResolutionNormal =
+      Vector2f((float)scaledGameResolution.x / win.x, (float)scaledGameResolution.y / win.y);
+  scaledGameOffsetNormal =
+      Vector2f((float)scaledGameOffset.x / win.x, (float)scaledGameOffset.y / win.y);
 }
 
 void Loadcontent() {
@@ -151,20 +151,18 @@ void ResetGame() {
     e->setPosition(GetNewEnemyPos());
   }
 }
-void PlayerDeath() {
-
-}
+void PlayerDeath() {}
 
 void Update(RenderWindow &window) {
 
   high_resolution_clock::time_point now = high_resolution_clock::now();
   // time in nanoseconds since last update
   const auto delta = (duration_cast<duration<unsigned int, nano>>(now - previous)).count();
-  const double deltaSeconds = ((double)delta) / 1000000000.0;
+  const float deltaSeconds = ((float)delta) / 1000000000.0f;
   previous = now;
 
   runTime += deltaSeconds;
-  currentEnemies = min((int)ceil(runTime * 0.6f) + 1,MAX_ENEMIES);
+  currentEnemies = min((int)ceil(runTime * 0.6f) + 1, MAX_ENEMIES);
 
   { // Input
     Event e;
@@ -175,12 +173,12 @@ void Update(RenderWindow &window) {
       if (e.type == Event::Closed)
         window.close();
 
-	  if (e.type == sf::Event::Resized)
-	  {
-		  Resize(window);
-		  gameView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y, scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
-		  window.setView(gameView);
-	  }
+      if (e.type == sf::Event::Resized) {
+        Resize(window);
+        gameView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
+                                       scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
+        window.setView(gameView);
+      }
 
       // keyboard event handling
       if (e.type == Event::KeyPressed) {
@@ -188,10 +186,9 @@ void Update(RenderWindow &window) {
           window.close();
         } else if (e.key.code == Keyboard::Space) {
           FireBullet();
+        } else if (e.key.code == Keyboard::B) {
+          Resize(window);
         }
-		else if (e.key.code == Keyboard::B) {
-			Resize(window);
-		}
       }
       // if the B button is pressed fire a bullet
       if (e.JoystickButtonPressed) {
@@ -201,10 +198,9 @@ void Update(RenderWindow &window) {
       }
     }
 
-	if (Keyboard::isKeyPressed(Keyboard::Space)) {
-		FireBullet();
-	}
-
+    if (Keyboard::isKeyPressed(Keyboard::Space)) {
+      FireBullet();
+    }
 
     if (Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::W)) {
       moveDirection += Vector2f(0, -1);
@@ -225,44 +221,53 @@ void Update(RenderWindow &window) {
       const float joystickY = Joystick::getAxisPosition(0, Joystick::Y);
 
       if (abs(joystickX) > 40.0f) {
-        moveDirection += Vector2f(((signbit(joystickX)) * -2) + 1, 0);
+        moveDirection += Vector2f((float)((signbit(joystickX) * -2) + 1), 0);
       }
       if (abs(joystickY) > 40.0f) {
-        moveDirection += Vector2f(0, ((signbit(joystickY)) * -2) + 1);
+        moveDirection += Vector2f(0, (float)((signbit(joystickY) * -2) + 1));
       }
-	  if (Joystick::isButtonPressed(0, 1)) {
-		  FireBullet();
-	  }
+      if (Joystick::isButtonPressed(0, 1)) {
+        FireBullet();
+      }
     }
-	if (playerSprite->getPosition().x < 0) { moveDirection.x = max(0.0f, moveDirection.x); }
-	if (playerSprite->getPosition().y < 0) { moveDirection.y = max(0.0f, moveDirection.y); }
-	if (playerSprite->getPosition().x >(GAME_WORLD_X - playerSprite->getLocalBounds().width)) { moveDirection.x = min(0.0f, moveDirection.x); }
-	if (playerSprite->getPosition().y >(GAME_WORLD_Y - playerSprite->getLocalBounds().height)) { moveDirection.y = min(0.0f, moveDirection.y); }
+    if (playerSprite->getPosition().x < 0) {
+      moveDirection.x = max(0.0f, moveDirection.x);
+    }
+    if (playerSprite->getPosition().y < 0) {
+      moveDirection.y = max(0.0f, moveDirection.y);
+    }
+    if (playerSprite->getPosition().x > (GAME_WORLD_X - playerSprite->getLocalBounds().width)) {
+      moveDirection.x = min(0.0f, moveDirection.x);
+    }
+    if (playerSprite->getPosition().y > (GAME_WORLD_Y - playerSprite->getLocalBounds().height)) {
+      moveDirection.y = min(0.0f, moveDirection.y);
+    }
     Normalize(moveDirection);
-    moveDirection = (moveDirection * playerMoveSpeed) * (float)deltaSeconds;
+    moveDirection = (moveDirection * playerMoveSpeed) * deltaSeconds;
 
     playerSprite->setPosition(playerSprite->getPosition() + moveDirection);
   } // End Input
 
   if (bulletsprite->getPosition().y > -128.0f) {
     bulletsprite->setPosition(bulletsprite->getPosition().x,
-                              bulletsprite->getPosition().y - 1000.0 * deltaSeconds);
+                              bulletsprite->getPosition().y - 1000.0f * deltaSeconds);
   }
 
   for (size_t i = 0; i < MAX_ENEMIES; i++) {
     if (i < currentEnemies) {
       // if not dead, move
       if (enemies[i]->getPosition().y < GAME_WORLD_X) {
-        enemies[i]->setPosition(enemies[i]->getPosition() +
-                                Vector2f(sinf(+i) * 100.0 * deltaSeconds, 100.0 * deltaSeconds));
+        enemies[i]->setPosition(
+            enemies[i]->getPosition() +
+            Vector2f(sinf(runTime + i) * 100.0f * deltaSeconds, 100.0f * deltaSeconds));
         // collisions
         if (bulletsprite->getGlobalBounds().intersects(enemies[i]->getGlobalBounds())) {
           enemies[i]->setPosition(GetNewEnemyPos());
           score += 100;
         }
-		if (playerSprite->getGlobalBounds().intersects(enemies[i]->getGlobalBounds())) {
-			PlayerDeath();
-		}
+        if (playerSprite->getGlobalBounds().intersects(enemies[i]->getGlobalBounds())) {
+          PlayerDeath();
+        }
       } else {
         // enemy is offscreen, kill
         enemies[i]->setPosition(GetNewEnemyPos());
@@ -299,13 +304,15 @@ void Render(RenderWindow &window) {
 int main() {
 
   Loadcontent();
-  RenderWindow *window = new RenderWindow(VideoMode(DEFAULT_WINDOW_RESOULUTION), "Advanced Minigame");
+  RenderWindow *window =
+      new RenderWindow(VideoMode(DEFAULT_WINDOW_RESOULUTION), "Advanced Minigame");
   window->setVerticalSyncEnabled(true);
   Resize(*window);
 
   // let's define a view
   gameView = View(FloatRect(0, 0, GAME_RESOULUTION));
-  gameView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y, scaledGameResolutionNormal.x , scaledGameResolutionNormal.y));
+  gameView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
+                                 scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
   // activate it
   window->setView(gameView);
 
@@ -314,7 +321,6 @@ int main() {
   while (window->isOpen()) {
     Update(*window);
     Render(*window);
-
   }
   Unload();
   delete window;
