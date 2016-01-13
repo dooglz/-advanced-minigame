@@ -234,9 +234,12 @@ void menuUpdate(RenderWindow &window) {
 
 			if (Mouse::isButtonPressed(Mouse::Left)) {
 				state = Gamestates::controls;
+				playText->setPosition(0, 48);
 				controlText->setPosition(0, 148);
-				controlText->setString("Keyboard                     "  "                            Controller" "\n\n"  "WASD  or arrow keys   " 
-				"         Left Thumbstick"	"                                 Move ship");
+				exitText->setPosition(0, 850);
+				controlText->setString("Keyboard \t\t\t"  "\t\t\t\t\t\t\t Controller" "\n\n"  "WASD  or arrow keys \t" 
+				"\t\tLeft Thumbstick"	" \t\tMove ship" "\n\n"  "Space" 
+				"\t\t\t\t\t\t\t\t\t\t\t\t\t\tB"	"\t\t\t\t\t\t\t\t\t\t\t\t\tFire Bullet" "\n\n" "P" "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tA" "\t\t\t\t\t\t\t\t\t\t\t\t\tPause Game");
 			}
 			
 		}
@@ -431,8 +434,6 @@ void controlsRender(RenderWindow &window) {
 	rectangle.setSize(Vector2f(GAME_RESOULUTION));
 	rectangle.setFillColor(Color::Green);
 	titleText->setPosition(rectangle.getSize().x / 2.5f, 0);
-	playText->setPosition(rectangle.getSize().x / 2.5f, 74);
-	exitText->setPosition(rectangle.getSize().x / 2.5f, 222);
 	window.draw(rectangle);
 	window.draw(*titleText);
 	window.draw(*playText);
