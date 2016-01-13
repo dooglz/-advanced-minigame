@@ -183,11 +183,12 @@ void menuUpdate(RenderWindow &window) {
 			else if (e.key.code == Keyboard::B) {
 				Resize(window);
 			}
-			else if (e.key.code == Keyboard::S) {
+			else if (e.key.code == Keyboard::S && state == Gamestates::Start) {
 				state = Gamestates::Game;
 			}
 		}
 	}
+	
 }
 
 void Update(RenderWindow &window) {
@@ -321,7 +322,7 @@ void Update(RenderWindow &window) {
   scoreText->setString("Score =" + to_string(score + ceil(runTime)));
 }
 
-void switchstate() {
+/*void switchstate() {
 
 	if (Keyboard::isKeyPressed(Keyboard::P) || Joystick::isButtonPressed(0, 2)) {
 		state = Gamestates::Pause;
@@ -331,7 +332,7 @@ void switchstate() {
 	{
 		state = Gamestates::Game;
 	}
-}
+}*/
 
 
 void menuRender(RenderWindow &window) {
@@ -371,40 +372,34 @@ int main() {
   window->setVerticalSyncEnabled(true);
   Resize(*window);
 
-  // let's define a view
+  // let's define  the game view
   gameView = View(FloatRect(0, 0, GAME_RESOULUTION));
   gameView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
                                  scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
 
 
-  // let's define a view
+  // let's define the menu view
   menuView = View(FloatRect(0, 0, GAME_RESOULUTION));
   menuView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
 	  scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
 
-  // choose which view to use
-  if (state == Gamestates::Start) {
-	  window->setView(menuView);
-
-
 	  while (window->isOpen()) {
-		  menuUpdate(*window);
-		  menuRender(*window);
+		  if (state == Gamestates::Start)
+		  {
+			  menuUpdate(*window);
+			  menuRender(*window);
+
+		  }
+		  else if (state == Gamestates::Game) {
+			  // Activate gameview
+			  window->setView(gameView);
+			  previous = high_resolution_clock::now();
+			  Update(*window);
+			  Render(*window);
+		  }
+
 	  }
-  }
   
-  else if (state == Gamestates::Game) {
-	  // Activate gameview
-	  window->setView(gameView);
-
-	  previous = high_resolution_clock::now();
-
-	  while (window->isOpen()) {
-		  Update(*window);
-		  Render(*window);
-		  switchstate();
-	  }
-  }
   Unload();
   delete window;
   window = nullptr;
