@@ -23,7 +23,8 @@ Vector2f scaledGameOffsetNormal;
 
 View gameView;
 View menuView;
-enum Gamestates {Start,Game,Pause,Dead};
+View controlView;
+enum Gamestates {Start,Game,Pause,Dead, controls};
 Gamestates state = Gamestates::Start;
 
 const string filepath = "..\\res/";
@@ -230,6 +231,14 @@ void menuUpdate(RenderWindow &window) {
 
 		if (controlText->getGlobalBounds().contains((sf::Vector2f)mousePosition)) {
 			controlText->setColor(Color::Red);
+
+			if (Mouse::isButtonPressed(Mouse::Left)) {
+				state = Gamestates::controls;
+				controlText->setPosition(0, 148);
+				controlText->setString("Keyboard                     "  "                            Controller" "\n\n"  "WASD  or arrow keys   " 
+				"         Left Thumbstick"	"                                 Move ship");
+			}
+			
 		}
 		else {
 			controlText->setColor(Color::White);
@@ -310,7 +319,7 @@ void Update(RenderWindow &window) {
       moveDirection += Vector2f(1, 0);
     }
 
-    // joystick input
+    // Joystick input
     if (Joystick::isConnected(0)) {
       const float joystickX = Joystick::getAxisPosition(0, Joystick::X);
       const float joystickY = Joystick::getAxisPosition(0, Joystick::Y);
@@ -413,6 +422,26 @@ void menuRender(RenderWindow &window) {
 }
 
 
+void controlsRender(RenderWindow &window) {
+	window.clear(sf::Color::Black);
+	titleText->setString("Insert game name here");
+	playText->setString("Play");
+	exitText->setString("exit");
+	RectangleShape rectangle(Vector2f(0, 0));
+	rectangle.setSize(Vector2f(GAME_RESOULUTION));
+	rectangle.setFillColor(Color::Green);
+	titleText->setPosition(rectangle.getSize().x / 2.5f, 0);
+	playText->setPosition(rectangle.getSize().x / 2.5f, 74);
+	exitText->setPosition(rectangle.getSize().x / 2.5f, 222);
+	window.draw(rectangle);
+	window.draw(*titleText);
+	window.draw(*playText);
+	window.draw(*controlText);
+	window.draw(*exitText);
+	window.display();
+}
+
+
 void Render(RenderWindow &window) {
   window.clear(sf::Color::Black);
   RectangleShape rectangle(Vector2f(0, 0));
@@ -429,7 +458,9 @@ void Render(RenderWindow &window) {
   window.display();
 }
 
+
 int main() {
+
   Loadcontent();
   RenderWindow *window =
       new RenderWindow(VideoMode(DEFAULT_WINDOW_RESOULUTION), "Advanced Minigame");
@@ -447,7 +478,10 @@ int main() {
   menuView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
 	  scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
 
-
+  // let's define the control layout view
+  controlView = View(FloatRect(0, 0, GAME_RESOULUTION));
+  controlView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
+	  scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
  
   previous = high_resolution_clock::now();
 
@@ -467,6 +501,12 @@ int main() {
 		  {
 			  menuUpdate(*window);
 			  menuRender(*window);
+		  }
+		  else if(state == Gamestates::controls)
+		  {
+			  menuUpdate(*window);
+			  controlsRender(*window);
+
 		  }
 	  }
   
