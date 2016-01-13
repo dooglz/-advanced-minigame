@@ -44,6 +44,7 @@ Font *gameFont;
 Sprite *playerSprite;
 Sprite *bulletsprite;
 Text *scoreText;
+Text *menuText;
 static Sprite *enemies[MAX_ENEMIES];
 
 static unsigned int currentEnemies = 0;
@@ -92,6 +93,11 @@ void Loadcontent() {
   scoreText->setPosition(0, 0);
   scoreText->setCharacterSize(24);
   scoreText->setColor(Color::Red);
+
+  menuText = new Text();
+  menuText->setFont(*gameFont);
+  menuText->setCharacterSize(24);
+  menuText->setColor(Color::White);
 
   for (size_t i = 0; i < 11; i++) {
     textures[i] = new Texture();
@@ -175,6 +181,14 @@ void menuUpdate(RenderWindow &window) {
 			window.setView(menuView);
 		}
 
+		sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+
+		if (menuText->getGlobalBounds().contains((sf::Vector2f)mousePosition)) {
+			menuText->setColor(Color::Red);
+		}
+		else {
+			menuText->setColor(Color::White);
+		}
 		// keyboard event handling
 		if (e.type == Event::KeyPressed) {
 			if (e.key.code == Keyboard::Escape) {
@@ -331,11 +345,14 @@ void Update(RenderWindow &window) {
 
 void menuRender(RenderWindow &window) {
 	window.clear(sf::Color::Black);
+	menuText->setString("Insert game name here");
 
 	RectangleShape rectangle(Vector2f(0, 0));
 	rectangle.setSize(Vector2f(GAME_RESOULUTION));
 	rectangle.setFillColor(Color::Green);
+	menuText->setPosition(rectangle.getSize().x / 2, 0);
 	window.draw(rectangle);
+	window.draw(*menuText);
 	window.display();
 }
 
