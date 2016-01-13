@@ -89,7 +89,7 @@ void Loadcontent() {
   gameFont->loadFromFile(filepath + "/fonts/AmericanCaptain.ttf");
   scoreText = new Text();
   scoreText->setFont(*gameFont);
-  scoreText->setPosition(900, 0);
+  scoreText->setPosition(0, 0);
   scoreText->setCharacterSize(24);
   scoreText->setColor(Color::Red);
 
@@ -183,7 +183,7 @@ void menuUpdate(RenderWindow &window) {
 			else if (e.key.code == Keyboard::B) {
 				Resize(window);
 			}
-			else if (e.key.code == Keyboard::S && state == Gamestates::Start) {
+			else if (e.key.code == Keyboard::S && state == Gamestates::Start || state == Gamestates::Pause) {
 				state = Gamestates::Game;
 			}
 		}
@@ -228,12 +228,9 @@ void Update(RenderWindow &window) {
           Resize(window);
         }
       }
-      // if the B button is pressed fire a bullet
-      if (e.JoystickButtonPressed) {
-        if (Joystick::isButtonPressed(0, 1)) {
-          FireBullet();
-        }
-      }
+	  if (Keyboard::isKeyPressed(Keyboard::P)) {
+		  state = Gamestates::Pause;
+	  }
     }
 
     if (Keyboard::isKeyPressed(Keyboard::Space)) {
@@ -264,6 +261,10 @@ void Update(RenderWindow &window) {
       if (abs(joystickY) > 40.0f) {
         moveDirection += Vector2f(0, (float)((signbit(joystickY) * -2) + 1));
       }
+
+	  if (Joystick::isButtonPressed(0, 2)) {
+		  state == Gamestates::Pause;
+	  }
       if (Joystick::isButtonPressed(0, 1)) {
         FireBullet();
       }
@@ -322,17 +323,10 @@ void Update(RenderWindow &window) {
   scoreText->setString("Score =" + to_string(score + ceil(runTime)));
 }
 
-/*void switchstate() {
 
-	if (Keyboard::isKeyPressed(Keyboard::P) || Joystick::isButtonPressed(0, 2)) {
-		state = Gamestates::Pause;
-	}
 
-	if (Keyboard::isKeyPressed(Keyboard::S) && state == Gamestates::Start)
-	{
-		state = Gamestates::Game;
-	}
-}*/
+
+
 
 
 void menuRender(RenderWindow &window) {
@@ -348,9 +342,6 @@ void menuRender(RenderWindow &window) {
 
 void Render(RenderWindow &window) {
   window.clear(sf::Color::Black);
-
-
-
   RectangleShape rectangle(Vector2f(0, 0));
   rectangle.setSize(Vector2f(GAME_RESOULUTION));
   rectangle.setFillColor(Color::Green);
@@ -383,6 +374,10 @@ int main() {
   menuView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
 	  scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
 
+
+ 
+  previous = high_resolution_clock::now();
+
 	  while (window->isOpen()) {
 		  if (state == Gamestates::Start)
 		  {
@@ -392,12 +387,14 @@ int main() {
 		  }
 		  else if (state == Gamestates::Game) {
 			  // Activate gameview
-			  window->setView(gameView);
-			  previous = high_resolution_clock::now();
 			  Update(*window);
 			  Render(*window);
 		  }
-
+		  else if (state == Gamestates::Pause)
+		  {
+			  menuUpdate(*window);
+			  menuRender(*window);
+		  }
 	  }
   
   Unload();
