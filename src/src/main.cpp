@@ -44,7 +44,10 @@ Font *gameFont;
 Sprite *playerSprite;
 Sprite *bulletsprite;
 Text *scoreText;
-Text *menuText;
+Text *titleText;
+Text *playText;
+Text *controlText;
+Text *exitText;
 static Sprite *enemies[MAX_ENEMIES];
 
 static unsigned int currentEnemies = 0;
@@ -94,10 +97,28 @@ void Loadcontent() {
   scoreText->setCharacterSize(24);
   scoreText->setColor(Color::Red);
 
-  menuText = new Text();
-  menuText->setFont(*gameFont);
-  menuText->setCharacterSize(24);
-  menuText->setColor(Color::White);
+ titleText = new Text();
+ titleText->setFont(*gameFont);
+ titleText->setCharacterSize(24);
+ titleText->setColor(Color::White);
+
+
+ playText = new Text();
+ playText->setFont(*gameFont);
+ playText->setCharacterSize(24);
+ playText->setColor(Color::White);
+
+
+ controlText = new Text();
+ controlText->setFont(*gameFont);
+ controlText->setCharacterSize(24);
+ controlText->setColor(Color::White);
+
+
+ exitText = new Text();
+ exitText->setFont(*gameFont);
+ exitText->setCharacterSize(24);
+ exitText->setColor(Color::White);
 
   for (size_t i = 0; i < 11; i++) {
     textures[i] = new Texture();
@@ -183,12 +204,37 @@ void menuUpdate(RenderWindow &window) {
 
 		sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
 
-		if (menuText->getGlobalBounds().contains((sf::Vector2f)mousePosition)) {
-			menuText->setColor(Color::Red);
+
+		if (exitText->getGlobalBounds().contains((sf::Vector2f)mousePosition)) {
+			exitText->setColor(Color::Red);
+			if (Mouse::isButtonPressed(Mouse::Left)) {
+				window.close();
+			}
 		}
 		else {
-			menuText->setColor(Color::White);
+			exitText->setColor(Color::White);
 		}
+
+		if (playText->getGlobalBounds().contains((sf::Vector2f)mousePosition)) {
+			playText->setColor(Color::Red);
+
+			if (Mouse::isButtonPressed(Mouse::Left)) {
+				state = Gamestates::Game;
+			}
+
+		}
+		else {
+			playText->setColor(Color::White);
+		}
+
+
+		if (controlText->getGlobalBounds().contains((sf::Vector2f)mousePosition)) {
+			controlText->setColor(Color::Red);
+		}
+		else {
+			controlText->setColor(Color::White);
+		}
+
 		// keyboard event handling
 		if (e.type == Event::KeyPressed) {
 			if (e.key.code == Keyboard::Escape) {
@@ -197,7 +243,7 @@ void menuUpdate(RenderWindow &window) {
 			else if (e.key.code == Keyboard::B) {
 				Resize(window);
 			}
-			else if (e.key.code == Keyboard::S && state == Gamestates::Start || state == Gamestates::Pause) {
+			else if (e.key.code == Keyboard::S && state == Gamestates::Start || e.key.code == Keyboard::S && state == Gamestates::Pause) {
 				state = Gamestates::Game;
 			}
 		}
@@ -276,8 +322,8 @@ void Update(RenderWindow &window) {
         moveDirection += Vector2f(0, (float)((signbit(joystickY) * -2) + 1));
       }
 
-	  if (Joystick::isButtonPressed(0, 2)) {
-		  state == Gamestates::Pause;
+	  if (Joystick::isButtonPressed(0, 2) && state == Gamestates::Game) {
+		  state = Gamestates::Pause;
 	  }
       if (Joystick::isButtonPressed(0, 1)) {
         FireBullet();
@@ -345,14 +391,24 @@ void Update(RenderWindow &window) {
 
 void menuRender(RenderWindow &window) {
 	window.clear(sf::Color::Black);
-	menuText->setString("Insert game name here");
+	titleText->setString("Insert game name here");
+	playText->setString("Play");
+	controlText->setString("controls");
+	exitText->setString("exit");
+
 
 	RectangleShape rectangle(Vector2f(0, 0));
 	rectangle.setSize(Vector2f(GAME_RESOULUTION));
 	rectangle.setFillColor(Color::Green);
-	menuText->setPosition(rectangle.getSize().x / 2, 0);
+	titleText->setPosition(rectangle.getSize().x / 2.5f, 0);
+	playText->setPosition(rectangle.getSize().x / 2.5f, 74);
+	controlText->setPosition(rectangle.getSize().x / 2.5f, 148);
+	exitText->setPosition(rectangle.getSize().x / 2.5f, 222);
 	window.draw(rectangle);
-	window.draw(*menuText);
+	window.draw(*titleText);
+	window.draw(*playText);
+	window.draw(*controlText);
+	window.draw(*exitText);
 	window.display();
 }
 
