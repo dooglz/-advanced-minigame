@@ -49,6 +49,7 @@ Text *titleText;
 Text *playText;
 Text *controlText;
 Text *exitText;
+int playerlives = 3;
 static Sprite *enemies[MAX_ENEMIES];
 
 static unsigned int currentEnemies = 0;
@@ -183,7 +184,7 @@ void ResetGame() {
     e->setPosition(GetNewEnemyPos());
   }
 }
-void PlayerDeath() {}
+
 
 
 
@@ -239,7 +240,9 @@ void menuUpdate(RenderWindow &window) {
 				exitText->setPosition(0, 850);
 				controlText->setString("Keyboard \t\t\t"  "\t\t\t\t\t\t\t Controller" "\n\n"  "WASD  or arrow keys \t" 
 				"\t\tLeft Thumbstick"	" \t\tMove ship" "\n\n"  "Space" 
-				"\t\t\t\t\t\t\t\t\t\t\t\t\t\tB"	"\t\t\t\t\t\t\t\t\t\t\t\t\tFire Bullet" "\n\n" "P" "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tA" "\t\t\t\t\t\t\t\t\t\t\t\t\tPause Game");
+				"\t\t\t\t\t\t\t\t\t\t\t\t\t\tB"	"\t\t\t\t\t\t\t\t\t\t\t\t\tFire Bullet" 
+					"\n\n" "P" "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tA" "\t\t\t\t\t\t\t\t\t\t\t\t\tPause Game"
+					"\n\n" "Escape or exit button" "\t\tBack" "\t\t\t\t\t\t\t\t\t\t\tExit Game");
 			}
 			
 		}
@@ -370,14 +373,15 @@ void Update(RenderWindow &window) {
       if (enemies[i]->getPosition().y < GAME_WORLD_X) {
         enemies[i]->setPosition(
             enemies[i]->getPosition() +
-            Vector2f(sinf(runTime + i) * 100.0f * deltaSeconds, 100.0f * deltaSeconds));
+            Vector2f(sinf(runTime + i) * 100.0f * deltaSeconds, 50.0f * deltaSeconds));
         // collisions
         if (bulletsprite->getGlobalBounds().intersects(enemies[i]->getGlobalBounds())) {
           enemies[i]->setPosition(GetNewEnemyPos());
           score += 100;
         }
         if (playerSprite->getGlobalBounds().intersects(enemies[i]->getGlobalBounds())) {
-          PlayerDeath();
+			enemies[i]->setPosition(GetNewEnemyPos());
+			playerlives -= 1;
         }
       } else {
         // enemy is offscreen, kill
@@ -392,13 +396,11 @@ void Update(RenderWindow &window) {
     }
   }
 
+  if (playerlives == 0) {
+	  state = Gamestates::Dead;
+  }
   scoreText->setString("Score =" + to_string(score + ceil(runTime)));
 }
-
-
-
-
-
 
 
 void menuRender(RenderWindow &window) {
@@ -508,6 +510,10 @@ int main() {
 			  menuUpdate(*window);
 			  controlsRender(*window);
 
+		  }
+		  else if (state == Gamestates::Dead) {
+			  menuUpdate(*window);
+			  menuRender(*window);
 		  }
 	  }
   
