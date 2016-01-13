@@ -26,7 +26,7 @@ static unsigned int currentEnemies = 0;
 static sf::Sprite enemies[MAX_ENEMIES];
 
 float playerMoveSpeed = 600.0f;
-
+ int killedeneimies = 0;
 static sf::Vector2f GetNewEnemyPos() {
   return sf::Vector2f(rand() % 1024, -128.0f);
 }
@@ -40,7 +40,7 @@ void Loadcontent() {
 
 	myfont.loadFromFile("..\\res/fonts/AmericanCaptain.ttf");
 	Text.setFont(myfont);
-	Text.setPosition(900,0);
+	Text.setPosition(700,0);
 	Text.setCharacterSize(24);
 	Text.setColor(sf::Color::Red);
 
@@ -174,6 +174,7 @@ void Update(sf::RenderWindow &window) {
                 enemies[i].getGlobalBounds())) {
           enemies[i].setPosition(GetNewEnemyPos());
           score += 100;
+		  killedeneimies += 1;
         }
       } else {
         // offscreen kill
@@ -188,7 +189,7 @@ void Update(sf::RenderWindow &window) {
     }
   }
 
-  Text.setString("Score =" + to_string(score + ceil(tick)));
+  Text.setString("Score =" + to_string(score + ceil(tick)) + "\n"  + "number of enemies destroyed =" + to_string(killedeneimies));
 }
 
 void Render(sf::RenderWindow &window) {
@@ -211,7 +212,8 @@ int main() {
   window.setVerticalSyncEnabled(true);
   previous = chrono::high_resolution_clock::now();
   while (window.isOpen()) {
-    Update(window);
+
+	Update(window);
     Render(window);
   }
   return 0;
