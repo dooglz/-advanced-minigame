@@ -20,7 +20,11 @@ Vector2f scaledGameResolutionNormal;
 Vector2u scaledGameOffset;
 Vector2f scaledGameOffsetNormal;
 
+
 View gameView;
+View menuView;
+enum Gamestates {Start,Game,Pause,Dead};
+Gamestates state = Gamestates::Start;
 
 const string filepath = "..\\res/";
 static const string textureNames[]{"img/spaceship1.png",
@@ -153,6 +157,39 @@ void ResetGame() {
 }
 void PlayerDeath() {}
 
+
+
+void menuUpdate(RenderWindow &window) {
+
+	Event e;
+
+	while (window.pollEvent(e)) {
+
+		if (e.type == Event::Closed)
+			window.close();
+
+		if (e.type == sf::Event::Resized) {
+			Resize(window);
+			menuView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
+				scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
+			window.setView(menuView);
+		}
+
+		// keyboard event handling
+		if (e.type == Event::KeyPressed) {
+			if (e.key.code == Keyboard::Escape) {
+				window.close();
+			}
+			else if (e.key.code == Keyboard::B) {
+				Resize(window);
+			}
+			else if (e.key.code == Keyboard::S) {
+				state = Gamestates::Game;
+			}
+		}
+	}
+}
+
 void Update(RenderWindow &window) {
 
   high_resolution_clock::time_point now = high_resolution_clock::now();
@@ -284,8 +321,34 @@ void Update(RenderWindow &window) {
   scoreText->setString("Score =" + to_string(score + ceil(runTime)));
 }
 
+void switchstate() {
+
+	if (Keyboard::isKeyPressed(Keyboard::P) || Joystick::isButtonPressed(0, 2)) {
+		state = Gamestates::Pause;
+	}
+
+	if (Keyboard::isKeyPressed(Keyboard::S) && state == Gamestates::Start)
+	{
+		state = Gamestates::Game;
+	}
+}
+
+
+void menuRender(RenderWindow &window) {
+	window.clear(sf::Color::Black);
+
+	RectangleShape rectangle(Vector2f(0, 0));
+	rectangle.setSize(Vector2f(GAME_RESOULUTION));
+	rectangle.setFillColor(Color::Green);
+	window.draw(rectangle);
+	window.display();
+}
+
+
 void Render(RenderWindow &window) {
   window.clear(sf::Color::Black);
+
+
 
   RectangleShape rectangle(Vector2f(0, 0));
   rectangle.setSize(Vector2f(GAME_RESOULUTION));
@@ -302,7 +365,6 @@ void Render(RenderWindow &window) {
 }
 
 int main() {
-
   Loadcontent();
   RenderWindow *window =
       new RenderWindow(VideoMode(DEFAULT_WINDOW_RESOULUTION), "Advanced Minigame");
@@ -313,14 +375,35 @@ int main() {
   gameView = View(FloatRect(0, 0, GAME_RESOULUTION));
   gameView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
                                  scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
-  // activate it
-  window->setView(gameView);
 
-  previous = high_resolution_clock::now();
 
-  while (window->isOpen()) {
-    Update(*window);
-    Render(*window);
+  // let's define a view
+  menuView = View(FloatRect(0, 0, GAME_RESOULUTION));
+  menuView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
+	  scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
+
+  // choose which view to use
+  if (state == Gamestates::Start) {
+	  window->setView(menuView);
+
+
+	  while (window->isOpen()) {
+		  menuUpdate(*window);
+		  menuRender(*window);
+	  }
+  }
+  
+  else if (state == Gamestates::Game) {
+	  // Activate gameview
+	  window->setView(gameView);
+
+	  previous = high_resolution_clock::now();
+
+	  while (window->isOpen()) {
+		  Update(*window);
+		  Render(*window);
+		  switchstate();
+	  }
   }
   Unload();
   delete window;
