@@ -12,7 +12,6 @@ using namespace std;
 
 #define GAME_NAME "SPACE WARS"
 
-
 #define VSYNC true
 
 enum TEX {
@@ -31,23 +30,22 @@ enum TEX {
   TEX_COUNT
 };
 
-
 const string filepath = "..\\res/";
-static const string textureNames[TEX_COUNT]{ "img/spaceship1.png",
-"img/spaceship2.png",
-"img/spaceship3.png",
-"img/Spaceship-Drakir1.png",
-"img/Spaceship-Drakir2.png",
-"img/Spaceship-Drakir3.png",
-"img/Spaceship-Drakir4.png",
-"img/Spaceship-Drakir5.png",
-"img/Spaceship-Drakir6.png",
-"img/Spaceship-Drakir7.png",
-"img/bullet.png",
-"img/Background.png" };
+static const string textureNames[TEX_COUNT]{"img/spaceship1.png",
+                                            "img/spaceship2.png",
+                                            "img/spaceship3.png",
+                                            "img/Spaceship-Drakir1.png",
+                                            "img/Spaceship-Drakir2.png",
+                                            "img/Spaceship-Drakir3.png",
+                                            "img/Spaceship-Drakir4.png",
+                                            "img/Spaceship-Drakir5.png",
+                                            "img/Spaceship-Drakir6.png",
+                                            "img/Spaceship-Drakir7.png",
+                                            "img/bullet.png",
+                                            "img/Background.png"};
 
 #ifdef _DEBUG
-#if defined(_WIN32) ||  defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN64)
 #define BREAKPOINT __debugbreak();
 #elif __APPLE__
 #define BREAKPOINT __builtin_trap();
