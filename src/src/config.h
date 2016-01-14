@@ -12,6 +12,9 @@ using namespace std;
 
 #define GAME_NAME "SPACE WARS"
 
+
+#define VSYNC true
+
 enum TEX {
   spaceship1,
   spaceship2,
@@ -42,3 +45,15 @@ static const string textureNames[TEX_COUNT]{ "img/spaceship1.png",
 "img/Spaceship-Drakir7.png",
 "img/bullet.png",
 "img/Background.png" };
+
+#ifdef _DEBUG
+#if defined(_WIN32) ||  defined(_WIN64)
+#define BREAKPOINT __debugbreak();
+#elif __APPLE__
+#define BREAKPOINT __builtin_trap();
+#elif __linux__
+#define BREAKPOINT __builtin_trap();
+#endif
+#else
+#define BREAKPOINT
+#endif

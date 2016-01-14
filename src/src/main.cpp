@@ -1,39 +1,30 @@
 #include "config.h"
 #include "game.h"
-
 #include "menu.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <chrono>
 #include <iostream>
 #include <thread>
-using namespace std;
-using namespace sf;
+
 using namespace chrono;
 
 Vector2u scaledGameResolution;
 Vector2f scaledGameResolutionNormal;
 Vector2u scaledGameOffset;
 Vector2f scaledGameOffsetNormal;
-
-
-
+RenderWindow *window;
 View gameView;
-View menuView;
-View controlView;
-
 Gamestates state = Gamestates::Start;
 
 Texture *textures[TEX_COUNT];
 Font *gameFont;
 Menu mainMenu;
 
-high_resolution_clock::time_point previous;
+static high_resolution_clock::time_point previous;
 
-
-
-void Resize(RenderWindow &window) {
-  const Vector2f win = (Vector2f)window.getSize();
+void Resize() {
+  const Vector2f win = (Vector2f)window->getSize();
   float scale = 1.0f;
   float scale2 = 1.0f;
   const float GWX = (float)GAME_WORLD_X;
@@ -67,9 +58,6 @@ void Loadcontent() {
   gameFont = new Font();
   gameFont->loadFromFile(filepath + "/fonts/AmericanCaptain.ttf");
 
-  LoadMenu(*gameFont);
-
-
   for (size_t i = 0; i < 12; i++) {
     textures[i] = new Texture();
     if (!textures[i]->loadFromFile(filepath + textureNames[i])) {
@@ -78,24 +66,19 @@ void Loadcontent() {
   }
 
   LoadGameContent();
-
 }
 
 void Unload() {
   UnLoadGameContent();
-
   for (auto &t : textures) {
     delete t;
     t = nullptr;
   }
-
   delete gameFont;
   gameFont = nullptr;
- 
 }
 
-
-void Update(RenderWindow &window) {
+void Update() {
 
   high_resolution_clock::time_point now = high_resolution_clock::now();
   // time in nanoseconds since last update
@@ -104,77 +87,61 @@ void Update(RenderWindow &window) {
   previous = now;
 
   Event e;
-  while (window.pollEvent(e)) {
-
-    if (e.type == Event::Closed) {
-      window.close();
-    } else if (e.type == Event::Resized) {
-      Resize(window);
+  while (window->pollEvent(e)) {
+    switch (e.type) {
+    case Event::Closed:
+      window->close();
+      break;
+    case Event::Resized:
+      Resize();
       gameView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
                                      scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
-      window.setView(gameView);
-    } else if (e.type == Event::KeyPressed) {
-      if (e.key.code == Keyboard::Escape) {
-        window.close();
-      } else if (e.key.code == Keyboard::B) {
-        Resize(window);
+      window->setView(gameView);
+      break;
+    case Event::KeyPressed:
+      switch (e.key.code) {
+      case Keyboard::Escape:
+        window->close();
+        break;
+      case Keyboard::B:
+        BREAKPOINT
+        break;
+      default:
+        break;
       }
+    default:
+      break;
     }
     if (state == Gamestates::Game) {
       GameHandleEvent(e);
+    } else if (state == Gamestates::Start) {
+      // MenuHadleEvent(e);
     }
-    else  if (state == Gamestates::Start){
-     // MenuHadleEvent(e);
-    }
-
   }
 
   if (state == Gamestates::Game) {
     GameUpdate(deltaSeconds);
+  } else if (state == Gamestates::Start) {
+    mainMenu.Update();
   }
-  else  if (state == Gamestates::Start) {
-    mainMenu.Update(window);
-  }
-
 }
 
-/*
-void controlsRender(RenderWindow &window) {
-  window.clear(sf::Color::Black);
-  titleText->setString("Insert game name here");
-  playText->setString("Play");
-  exitText->setString("exit");
-  RectangleShape rectangle(Vector2f(0, 0));
-  rectangle.setSize(Vector2f(GAME_RESOULUTION));
-  rectangle.setTexture(textures[11]);
-  titleText->setPosition(rectangle.getSize().x / 2.5f, 0);
-  window.draw(rectangle);
-  window.draw(*titleText);
-  window.draw(*playText);
-  window.draw(*controlText);
-  window.draw(*exitText);
-  window.display();
-}
-*/
-
-void Render(RenderWindow &window) {
-  window.clear(sf::Color::Black);
+void Render() {
+  window->clear(sf::Color::Black);
   if (state == Gamestates::Game) {
-    GameRender(window);
+    GameRender();
+  } else if (state == Gamestates::Start) {
+    mainMenu.Render();
   }
-  else  if (state == Gamestates::Start) {
-    mainMenu.Render(window);
-  }
-  window.display();
+  window->display();
 }
 
 int main() {
 
   Loadcontent();
-  RenderWindow *window =
-      new RenderWindow(VideoMode(DEFAULT_WINDOW_RESOULUTION), "Advanced Minigame");
-  window->setVerticalSyncEnabled(true);
-  Resize(*window);
+  window = new RenderWindow(VideoMode(DEFAULT_WINDOW_RESOULUTION), "Advanced Minigame");
+  window->setVerticalSyncEnabled(VSYNC);
+  Resize();
 
   gameView = View(FloatRect(0, 0, GAME_RESOULUTION));
   gameView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
@@ -188,13 +155,13 @@ int main() {
       new MenuButton("Controlls", *gameFont, []() { state = Gamestates::Game; }));
   mainMenu.items.push_back(
       new MenuButton("Credits", *gameFont, []() { state = Gamestates::Game; }));
-  mainMenu.items.push_back(new MenuButton("Exit", *gameFont, []() { state = Gamestates::Game; }));
+  mainMenu.items.push_back(new MenuButton("Exit", *gameFont, []() { window->close(); }));
 
   previous = high_resolution_clock::now();
 
   while (window->isOpen()) {
-    Update(*window);
-    Render(*window);
+    Update();
+    Render();
   }
 
   Unload();

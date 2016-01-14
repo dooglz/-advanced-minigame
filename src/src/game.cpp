@@ -10,6 +10,7 @@ Text *scoreText;
 Text *pausedText;
 ParticleSystem *ps;
 
+extern RenderWindow *window;
 extern Gamestates state;
 extern Font *gameFont;
 extern Texture *textures[TEX_COUNT];
@@ -190,15 +191,15 @@ void GameUpdate(float deltaSeconds) {
                        to_string(playerlives));
 }
 
-void GameRender(RenderWindow &window) {
-  window.draw(*ps);
-  window.draw(*playerSprite);
-  window.draw(*bulletsprite);
+void GameRender() {
+  window->draw(*ps);
+  window->draw(*playerSprite);
+  window->draw(*bulletsprite);
   for (size_t i = 0; i < currentEnemies; i++) {
-    window.draw(*enemies[i]);
+    window->draw(*enemies[i]);
   }
 
-  window.draw(*scoreText);
+  window->draw(*scoreText);
 }
 
 void ResetGame() {

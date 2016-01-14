@@ -7,7 +7,7 @@ enum Gamestates { Start, Game, Pause, Dead, controls };
 
 void GameUpdate(float delta);
 void GameHandleEvent(Event &e);
-void GameRender(RenderWindow &window);
+void GameRender();
 
 void ResetGame();
 
