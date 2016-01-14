@@ -48,6 +48,7 @@ Text *scoreText;
 Text *titleText;
 Text *playText;
 Text *controlText;
+Text * pausedText;
 Text *exitText;
 int playerlives = 3;
 static Sprite *enemies[MAX_ENEMIES];
@@ -91,6 +92,7 @@ void Resize(RenderWindow &window) {
 }
 
 void Loadcontent() {
+
   gameFont = new Font();
   gameFont->loadFromFile(filepath + "/fonts/AmericanCaptain.ttf");
   scoreText = new Text();
@@ -104,6 +106,13 @@ void Loadcontent() {
  titleText->setCharacterSize(24);
  titleText->setColor(Color::White);
 
+ pausedText = new Text();
+ pausedText->setFont(*gameFont);
+ pausedText->setPosition(GAME_WORLD_X /2.5, 512);
+ pausedText->setString("Game Paused");
+ pausedText->setCharacterSize(32);
+ pausedText->setColor(Color::Red);
+ pausedText->Bold;
 
  playText = new Text();
  playText->setFont(*gameFont);
@@ -116,11 +125,17 @@ void Loadcontent() {
  controlText->setCharacterSize(24);
  controlText->setColor(Color::White);
 
+ controlText = new Text();
+ controlText->setFont(*gameFont);
+ controlText->setCharacterSize(24);
+ controlText->setColor(Color::Blue);
+
 
  exitText = new Text();
  exitText->setFont(*gameFont);
  exitText->setCharacterSize(24);
  exitText->setColor(Color::White);
+
 
   for (size_t i = 0; i < 11; i++) {
     textures[i] = new Texture();
@@ -339,6 +354,7 @@ void Update(RenderWindow &window) {
 
 	  if (Joystick::isButtonPressed(0, 2) && state == Gamestates::Game) {
 		  state = Gamestates::Pause;
+	
 	  }
       if (Joystick::isButtonPressed(0, 1)) {
         FireBullet();
@@ -399,6 +415,8 @@ void Update(RenderWindow &window) {
   if (playerlives == 0) {
 	  state = Gamestates::Dead;
   }
+
+
   scoreText->setString("Score =" + to_string(score + ceil(runTime)));
 }
 
@@ -422,6 +440,9 @@ void menuRender(RenderWindow &window) {
 	window.draw(*titleText);
 	window.draw(*playText);
 	window.draw(*controlText);
+	if (state == Gamestates::Pause) {
+		window.draw(*pausedText);
+	}
 	window.draw(*exitText);
 	window.display();
 }
