@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 using namespace sf;
 
-enum Gamestates { Start, Game, Pause, Dead, controls };
+enum Gamestates { Start, Game, Pause, Credits, Controls };
 
 void GameUpdate(float delta);
 void GameHandleEvent(Event &e);

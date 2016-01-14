@@ -20,7 +20,8 @@ Gamestates state = Gamestates::Start;
 Texture *textures[TEX_COUNT];
 Font *gameFont;
 Menu mainMenu;
-
+Menu creditsMenu;
+Menu controlsMenu;
 static high_resolution_clock::time_point previous;
 
 void Resize() {
@@ -112,27 +113,61 @@ void Update() {
     default:
       break;
     }
-    if (state == Gamestates::Game) {
+
+    switch (state) {
+    case Game:
       GameHandleEvent(e);
-    } else if (state == Gamestates::Start) {
+      break;
+    case Start:
       // MenuHadleEvent(e);
+      break;
+    case Controls:
+      break;
+    case Credits:
+      break;
+    default:
+      break;
     }
   }
 
-  if (state == Gamestates::Game) {
+  switch (state) {
+  case Game:
     GameUpdate(deltaSeconds);
-  } else if (state == Gamestates::Start) {
+    break;
+  case Start:
     mainMenu.Update();
+    break;
+  case Controls:
+    controlsMenu.Update();
+    break;
+  case Credits:
+    creditsMenu.Update();
+    break;
+  default:
+    break;
   }
 }
 
 void Render() {
   window->clear(sf::Color::Black);
-  if (state == Gamestates::Game) {
+
+  switch (state) {
+  case Game:
     GameRender();
-  } else if (state == Gamestates::Start) {
+    break;
+  case Start:
     mainMenu.Render();
+    break;
+  case Controls:
+    controlsMenu.Render();
+    break;
+  case Credits:
+    creditsMenu.Render();
+    break;
+  default:
+    break;
   }
+
   window->display();
 }
 
@@ -149,13 +184,20 @@ int main() {
 
   mainMenu = Menu();
   mainMenu.items.push_back(new MenuItem(GAME_NAME, *gameFont));
-  mainMenu.items.push_back(
-      new MenuButton("Start Game", *gameFont, []() { state = Gamestates::Game; }));
-  mainMenu.items.push_back(
-      new MenuButton("Controlls", *gameFont, []() { state = Gamestates::Game; }));
-  mainMenu.items.push_back(
-      new MenuButton("Credits", *gameFont, []() { state = Gamestates::Game; }));
+  mainMenu.items.push_back(new MenuButton("Start Game", *gameFont, []() { state = Game; }));
+  mainMenu.items.push_back(new MenuButton("Controls", *gameFont, []() { state = Controls; }));
+  mainMenu.items.push_back(new MenuButton("Credits", *gameFont, []() { state = Credits; }));
   mainMenu.items.push_back(new MenuButton("Exit", *gameFont, []() { window->close(); }));
+  controlsMenu = Menu();
+  controlsMenu.items.push_back(new MenuItem("Controls", *gameFont));
+  controlsMenu.items.push_back(
+      new MenuItem("WASD / arrow keys / Left Thumbstick\t\tMove ship", *gameFont));
+  controlsMenu.items.push_back(new MenuButton("Back", *gameFont, []() { state = Start; }));
+  creditsMenu = Menu();
+  creditsMenu.items.push_back(new MenuItem("Credits", *gameFont));
+  creditsMenu.items.push_back(new MenuItem("Neil Notman", *gameFont));
+  creditsMenu.items.push_back(new MenuItem("Sam Serrels", *gameFont));
+  creditsMenu.items.push_back(new MenuButton("Back", *gameFont, []() { state = Start; }));
 
   previous = high_resolution_clock::now();
 

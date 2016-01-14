@@ -123,8 +123,8 @@ void ParticleSystem::update(float deltaTime) {
     (*it)->drawVertex.position.x += (*it)->vel.x * deltaTime * m_particleSpeed;
     (*it)->drawVertex.position.y += (*it)->vel.y * deltaTime * m_particleSpeed;
 
-    round((*it)->drawVertex.position.x);
-    round((*it)->drawVertex.position.y);
+    (*it)->drawVertex.position.x = round((*it)->drawVertex.position.x);
+    (*it)->drawVertex.position.y = round((*it)->drawVertex.position.y);
 
     /* If they are set to disolve, disolve */
     // if (m_dissolve)
