@@ -1,73 +1,94 @@
 #pragma once
 
-
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
-
-
-#include <SFML\System\Vector2.hpp>
-#include <SFML\System\Clock.hpp>
+#include <SFML/Graphics.hpp>
+#include <list>
+#include <memory>
 #include <random>
-#include <SFML\Graphics\Color.hpp>
-#include <SFML\Graphics\Image.hpp>
-#include <SFML\Graphics\Sprite.hpp>
+#include <sstream>
 #include <vector>
 
-using namespace std;
-using namespace sf;
+/* Enum for particle distribution type */
+namespace Shape {
+enum { CIRCLE, SQUARE };
+}
 
-namespace Shape { enum { CIRCLE, SQUARE }; }
+/* Particle Structure */
+struct Particle : public sf::Drawable {
+  /* Data Members */
 
+  sf::Vertex drawVertex; /*< To replace pos */
+  sf::Vector2f vel;      // Velocity
 
+  /* Member Functions */
 
-struct Particle
-{
-	sf::Vector2f pos; // Position
-	sf::Vector2f vel; // Velocity
-	sf::Color color;  // RGBA
+  virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const {
+    target.draw(&drawVertex, 1, sf::Points, states);
+  }
 };
 
+/* Typedefs */
+typedef std::uniform_real_distribution<> UniRealDist;
+typedef std::uniform_int_distribution<> UniIntDist;
+typedef std::shared_ptr<Particle> ParticlePtr;
 
-typedef vector<Particle*>::iterator ParticleIterator;
-
-class ParticleSystem
-{
+class ParticleSystem : public sf::Drawable {
 public:
-	ParticleSystem(int width, int height);
-	~ParticleSystem();
+  /* Constructors/Destructor */
 
-	void fuel(int particles); // Adds new particles to m_particles
-	void update(); // Updates position, velocity and opacity of all particles
-	void render(); // Renders all particles onto m_image
-	void remove(); // Removes all particles from m_image
+  ParticleSystem(sf::Vector2u canvasSize);
+  ~ParticleSystem(void);
 
-	void setPosition(float x, float y) { m_position.x = x; m_position.y = y; }
-	void setGravity(float x, float y) { m_gravity.x = x; m_gravity.y = y; }
-	void setParticleSpeed(float speed) { m_particleSpeed = speed; }
-	void setDissolve(bool enable) { m_dissolve = enable; }
-	void setDissolutionRate(unsigned char rate) { m_dissolutionRate = rate; }
-	void setShape(unsigned char shape) { m_shape = shape; }
+  /* Getters and Setters */
 
-	int getNumberOfParticles() { return m_particles.size(); }
-	std::string getNumberOfParticlesString();
-	sf::Sprite& getSprite() { return m_sprite; }
+  const int getDissolutionRate(void) const { return m_dissolutionRate; }
+  const int getNumberOfParticles(void) const { return m_particles.size(); }
+  const float getParticleSpeed(void) const { return m_particleSpeed; }
+  const std::string getNumberOfParticlesString(void) const;
+
+  void setCanvasSize(sf::Vector2u newSize) { m_canvasSize = newSize; }
+  void setDissolutionRate(sf::Uint8 rate) { m_dissolutionRate = rate; }
+  void setDissolve(void) { m_dissolve = !m_dissolve; }
+  void setDistribution(void) { m_shape = (m_shape + 1) % 2; }
+  void setGravity(float x, float y) {
+    m_gravity.x = x;
+    m_gravity.y = y;
+  }
+  void setGravity(sf::Vector2f gravity) { m_gravity = gravity; }
+  void setParticleSpeed(float speed) { m_particleSpeed = speed; }
+  void setPosition(float x, float y) {
+    m_startPos.x = x;
+    m_startPos.y = y;
+  }
+  void setPosition(sf::Vector2f position) { m_startPos = position; }
+  void setShape(sf::Uint8 shape) { m_shape = shape; }
+
+  /* Member Functions */
+
+  virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
+
+  void fuel(int particles);     /*< Adds new particles */
+  void update(float deltaTime); /*< Updates particles */
 
 private:
-	sf::Vector2f    m_position; // Particle origin (pixel co-ordinates)
-	sf::Vector2f    m_gravity;  // Affects particle velocities
-	std::default_random_engine generator;
-	std::uniform_int_distribution<int> distribution;
-	sf::Clock   m_clock;    // Used to scale particle motion
-	sf::Color   m_transparent;  // sf::Color( 0, 0, 0, 0 )
-	sf::Image   m_image;    // See render() and remove()
-	sf::Sprite  m_sprite;   // Connected to m_image
-	float       m_particleSpeed;// Pixels per second (at most)
-	bool        m_dissolve; // Dissolution enabled?
-	unsigned char   m_dissolutionRate;
-	unsigned char   m_shape;
+  /* Data Members */
 
-	std::vector<Particle*> m_particles;
+  bool m_dissolve;       /*< Dissolution enabled? */
+  float m_particleSpeed; /*< Pixels per second (at most) */
+
+  sf::Color m_transparent; /*< sf::Color(0, 0, 0, 0) */
+
+  sf::Uint8 m_dissolutionRate; /*< Rate particles disolve */
+  sf::Uint8 m_shape;           /*< Shape of distribution */
+
+  sf::Vector2f m_gravity;    /*< Influences particle velocities */
+  sf::Vector2f m_startPos;   /*< Particle origin */
+  sf::Vector2u m_canvasSize; /*< Limits of particle travel */
+
+  /* Container */
+  std::vector<ParticlePtr> m_particles;
 };
 
 #endif

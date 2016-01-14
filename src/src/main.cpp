@@ -1,7 +1,8 @@
+#include "particles.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <iostream>
 #include <chrono>
+#include <iostream>
 #include <thread>
 using namespace std;
 using namespace sf;
@@ -20,11 +21,12 @@ Vector2f scaledGameResolutionNormal;
 Vector2u scaledGameOffset;
 Vector2f scaledGameOffsetNormal;
 
+ParticleSystem *ps;
 
 View gameView;
 View menuView;
 View controlView;
-enum Gamestates {Start,Game,Pause,Dead, controls};
+enum Gamestates { Start, Game, Pause, Dead, controls };
 Gamestates state = Gamestates::Start;
 
 const string filepath = "..\\res/";
@@ -38,7 +40,8 @@ static const string textureNames[]{"img/spaceship1.png",
                                    "img/Spaceship-Drakir5.png",
                                    "img/Spaceship-Drakir6.png",
                                    "img/Spaceship-Drakir7.png",
-                                   "img/bullet.png", "img/Background.png"};
+                                   "img/bullet.png",
+                                   "img/Background.png"};
 
 Texture *textures[12];
 Font *gameFont;
@@ -49,7 +52,7 @@ Text *scoreText;
 Text *titleText;
 Text *playText;
 Text *controlText;
-Text * pausedText;
+Text *pausedText;
 Text *exitText;
 int playerlives = 3;
 static Sprite *enemies[MAX_ENEMIES];
@@ -102,41 +105,38 @@ void Loadcontent() {
   scoreText->setCharacterSize(24);
   scoreText->setColor(Color::Red);
 
- titleText = new Text();
- titleText->setFont(*gameFont);
- titleText->setCharacterSize(24);
- titleText->setColor(Color::White);
+  titleText = new Text();
+  titleText->setFont(*gameFont);
+  titleText->setCharacterSize(24);
+  titleText->setColor(Color::White);
 
- pausedText = new Text();
- pausedText->setFont(*gameFont);
- pausedText->setPosition(GAME_WORLD_X /2.5, 512);
- pausedText->setString("Game Paused");
- pausedText->setCharacterSize(32);
- pausedText->setColor(Color::Red);
- pausedText->Bold;
+  pausedText = new Text();
+  pausedText->setFont(*gameFont);
+  pausedText->setPosition(GAME_WORLD_X / 2.5, 512);
+  pausedText->setString("Game Paused");
+  pausedText->setCharacterSize(32);
+  pausedText->setColor(Color::Red);
+  pausedText->Bold;
 
- playText = new Text();
- playText->setFont(*gameFont);
- playText->setCharacterSize(24);
- playText->setColor(Color::White);
+  playText = new Text();
+  playText->setFont(*gameFont);
+  playText->setCharacterSize(24);
+  playText->setColor(Color::White);
 
+  controlText = new Text();
+  controlText->setFont(*gameFont);
+  controlText->setCharacterSize(24);
+  controlText->setColor(Color::White);
 
- controlText = new Text();
- controlText->setFont(*gameFont);
- controlText->setCharacterSize(24);
- controlText->setColor(Color::White);
+  controlText = new Text();
+  controlText->setFont(*gameFont);
+  controlText->setCharacterSize(24);
+  controlText->setColor(Color::Blue);
 
- controlText = new Text();
- controlText->setFont(*gameFont);
- controlText->setCharacterSize(24);
- controlText->setColor(Color::Blue);
-
-
- exitText = new Text();
- exitText->setFont(*gameFont);
- exitText->setCharacterSize(24);
- exitText->setColor(Color::White);
-
+  exitText = new Text();
+  exitText->setFont(*gameFont);
+  exitText->setCharacterSize(24);
+  exitText->setColor(Color::White);
 
   for (size_t i = 0; i < 12; i++) {
     textures[i] = new Texture();
@@ -206,94 +206,109 @@ void ResetGame() {
   }
 }
 
-
-
-
 void menuUpdate(RenderWindow &window) {
 
-	Event e;
+  Event e;
 
-	while (window.pollEvent(e)) {
+  while (window.pollEvent(e)) {
 
-		if (e.type == Event::Closed)
-			window.close();
+    if (e.type == Event::Closed)
+      window.close();
 
-		if (e.type == sf::Event::Resized) {
-			Resize(window);
-			menuView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
-				scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
-			window.setView(menuView);
-		}
+    if (e.type == sf::Event::Resized) {
+      Resize(window);
+      menuView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
+                                     scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
+      window.setView(menuView);
+    }
 
+    sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
 
-		sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+    if (exitText->getGlobalBounds().contains((sf::Vector2f)mousePosition)) {
+      exitText->setColor(Color::Red);
+      if (Mouse::isButtonPressed(Mouse::Left)) {
+        window.close();
+      }
+    } else {
+      exitText->setColor(Color::White);
+    }
 
-		if (exitText->getGlobalBounds().contains((sf::Vector2f)mousePosition)) {
-			exitText->setColor(Color::Red);
-			if (Mouse::isButtonPressed(Mouse::Left)) {
-				window.close();
-			}
-		}
-		else {
-			exitText->setColor(Color::White);
-		}
+    if (playText->getGlobalBounds().contains((sf::Vector2f)mousePosition)) {
+      playText->setColor(Color::Red);
 
-		if (playText->getGlobalBounds().contains((sf::Vector2f)mousePosition)) {
-			playText->setColor(Color::Red);
+      if (Mouse::isButtonPressed(Mouse::Left)) {
+        state = Gamestates::Game;
+      }
 
-			if (Mouse::isButtonPressed(Mouse::Left)) {
-				state = Gamestates::Game;
-			}
+    } else {
+      playText->setColor(Color::White);
+    }
 
-		}
-		else {
-			playText->setColor(Color::White);
-		}
+    if (controlText->getGlobalBounds().contains((sf::Vector2f)mousePosition)) {
+      controlText->setColor(Color::Red);
 
+      if (Mouse::isButtonPressed(Mouse::Left)) {
+        state = Gamestates::controls;
+        playText->setPosition(0, 48);
+        controlText->setPosition(0, 148);
+        exitText->setPosition(0, 850);
+        controlText->setString("Menu controls"
+                               "\n\n"
+                               "Use the mouse to select your choice"
+                               "\n\n"
+                               "controller"
+                               "\t\t\t\tA"
+                               "\t\t\tPlay Game"
+                               "\n"
+                               "\t\t\t\t\t\t\t\t\t\t\t\tB"
+                               "\t\t\tExit Game"
+                               "\n\n"
+                               "Game Controls"
+                               "\n\n"
+                               "Keyboard \t\t\t"
+                               "\t\t\t\t\t\t\t Controller"
+                               "\n\n"
+                               "WASD  or arrow keys \t"
+                               "\t\tLeft Thumbstick"
+                               " \t\tMove ship"
+                               "\n\n"
+                               "Space"
+                               "\t\t\t\t\t\t\t\t\t\t\t\t\t\tA"
+                               "\t\t\t\t\t\t\t\t\t\t\t\t\tFire Bullet"
+                               "\n\n"
+                               "P"
+                               "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tX"
+                               "\t\t\t\t\t\t\t\t\t\t\t\t\tPause Game"
+                               "\n\n"
+                               "Escape or exit button"
+                               "\t\tB"
+                               "\t\t\t\t\t\t\t\t\t\t\t\t\t\tExit Game");
+      }
 
-		if (controlText->getGlobalBounds().contains((sf::Vector2f)mousePosition)) {
-			controlText->setColor(Color::Red);
+    } else {
+      controlText->setColor(Color::White);
+    }
 
-			if (Mouse::isButtonPressed(Mouse::Left)) {
-				state = Gamestates::controls;
-				playText->setPosition(0, 48);
-				controlText->setPosition(0, 148);
-				exitText->setPosition(0, 850);
-				controlText->setString("Menu controls" "\n\n" "Use the mouse to select your choice" "\n\n""controller"  "\t\t\t\tA" "\t\t\tPlay Game" "\n" "\t\t\t\t\t\t\t\t\t\t\t\tB" "\t\t\tExit Game"  "\n\n" 	
-				"Game Controls" "\n\n""Keyboard \t\t\t"  "\t\t\t\t\t\t\t Controller" "\n\n"  "WASD  or arrow keys \t" 
-				"\t\tLeft Thumbstick"	" \t\tMove ship" "\n\n"  "Space" 
-				"\t\t\t\t\t\t\t\t\t\t\t\t\t\tA"	"\t\t\t\t\t\t\t\t\t\t\t\t\tFire Bullet" 
-					"\n\n" "P" "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tX" "\t\t\t\t\t\t\t\t\t\t\t\t\tPause Game"
-					"\n\n" "Escape or exit button" "\t\tB" "\t\t\t\t\t\t\t\t\t\t\t\t\t\tExit Game");
-			}
-			
-		}
-		else {
-			controlText->setColor(Color::White);
-		}
+    // keyboard event handling
+    if (e.type == Event::KeyPressed) {
+      if (e.key.code == Keyboard::Escape) {
+        window.close();
+      } else if (e.key.code == Keyboard::B) {
+        Resize(window);
+      } else if (e.key.code == Keyboard::S && state == Gamestates::Start ||
+                 e.key.code == Keyboard::S && state == Gamestates::Pause) {
+        state = Gamestates::Game;
+      }
+    }
 
-		// keyboard event handling
-		if (e.type == Event::KeyPressed) {
-			if (e.key.code == Keyboard::Escape) {
-				window.close();
-			}
-			else if (e.key.code == Keyboard::B) {
-				Resize(window);
-			}
-			else if (e.key.code == Keyboard::S && state == Gamestates::Start || e.key.code == Keyboard::S && state == Gamestates::Pause) {
-				state = Gamestates::Game;
-			}
-		}
+    if (Joystick::isButtonPressed(0, 0)) {
+      state = Gamestates::Game;
+    }
 
-		if (Joystick::isButtonPressed(0, 0)) {
-			state = Gamestates::Game;
-		}
-
-		if (Joystick::isButtonPressed(0, 1)) {
-			window.close();
-		}
-	}
-	
+    if (Joystick::isButtonPressed(0, 1)) {
+      window.close();
+    }
+  }
 }
 
 void Update(RenderWindow &window) {
@@ -310,7 +325,7 @@ void Update(RenderWindow &window) {
   { // Input
     Event e;
     Vector2f moveDirection(0, 0);
-	playerSprite->setColor(Color::Red);
+    playerSprite->setColor(Color::Red);
     while (window.pollEvent(e)) {
 
       if (e.type == Event::Closed)
@@ -333,9 +348,9 @@ void Update(RenderWindow &window) {
           Resize(window);
         }
       }
-	  if (Keyboard::isKeyPressed(Keyboard::P)) {
-		  state = Gamestates::Pause;
-	  }
+      if (Keyboard::isKeyPressed(Keyboard::P)) {
+        state = Gamestates::Pause;
+      }
     }
 
     if (Keyboard::isKeyPressed(Keyboard::Space)) {
@@ -367,10 +382,9 @@ void Update(RenderWindow &window) {
         moveDirection += Vector2f(0, (float)((signbit(joystickY) * -2) + 1));
       }
 
-	  if (Joystick::isButtonPressed(0, 2) && state == Gamestates::Game) {
-		  state = Gamestates::Pause;
-	
-	  }
+      if (Joystick::isButtonPressed(0, 2) && state == Gamestates::Game) {
+        state = Gamestates::Pause;
+      }
       if (Joystick::isButtonPressed(0, 0)) {
         FireBullet();
       }
@@ -411,8 +425,8 @@ void Update(RenderWindow &window) {
           score += 100;
         }
         if (playerSprite->getGlobalBounds().intersects(enemies[i]->getGlobalBounds())) {
-			enemies[i]->setPosition(GetNewEnemyPos());
-			playerlives -= 1;
+          enemies[i]->setPosition(GetNewEnemyPos());
+          playerlives -= 1;
         }
       } else {
         // enemy is offscreen, kill
@@ -428,58 +442,56 @@ void Update(RenderWindow &window) {
   }
 
   if (playerlives == 0) {
-	  state = Gamestates::Dead;
+    state = Gamestates::Dead;
   }
 
-
-  scoreText->setString("Score =" + to_string(score + ceil(runTime)) + "\n\n" "lives = " + to_string(playerlives));
+  ps->update(0.02f);
+  scoreText->setString("Score =" + to_string(score + ceil(runTime)) + "\n\n"
+                                                                      "lives = " +
+                       to_string(playerlives));
 }
-
 
 void menuRender(RenderWindow &window) {
-	window.clear(sf::Color::Black);
-	titleText->setString("Insert game name here");
-	playText->setString("Play");
-	controlText->setString("controls");
-	exitText->setString("exit");
+  window.clear(sf::Color::Black);
+  titleText->setString("Insert game name here");
+  playText->setString("Play");
+  controlText->setString("controls");
+  exitText->setString("exit");
 
-
-	RectangleShape rectangle(Vector2f(0, 0));
-	rectangle.setSize(Vector2f(GAME_RESOULUTION));
-	rectangle.setTexture(textures[11]);
-	titleText->setPosition(rectangle.getSize().x / 2.5f, 0);
-	playText->setPosition(rectangle.getSize().x / 2.5f, 74);
-	controlText->setPosition(rectangle.getSize().x / 2.5f, 148);
-	exitText->setPosition(rectangle.getSize().x / 2.5f, 222);
-	window.draw(rectangle);
-	window.draw(*titleText);
-	window.draw(*playText);
-	window.draw(*controlText);
-	if (state == Gamestates::Pause) {
-		window.draw(*pausedText);
-	}
-	window.draw(*exitText);
-	window.display();
+  RectangleShape rectangle(Vector2f(0, 0));
+  rectangle.setSize(Vector2f(GAME_RESOULUTION));
+  rectangle.setTexture(textures[11]);
+  titleText->setPosition(rectangle.getSize().x / 2.5f, 0);
+  playText->setPosition(rectangle.getSize().x / 2.5f, 74);
+  controlText->setPosition(rectangle.getSize().x / 2.5f, 148);
+  exitText->setPosition(rectangle.getSize().x / 2.5f, 222);
+  window.draw(rectangle);
+  window.draw(*titleText);
+  window.draw(*playText);
+  window.draw(*controlText);
+  if (state == Gamestates::Pause) {
+    window.draw(*pausedText);
+  }
+  window.draw(*exitText);
+  window.display();
 }
-
 
 void controlsRender(RenderWindow &window) {
-	window.clear(sf::Color::Black);
-	titleText->setString("Insert game name here");
-	playText->setString("Play");
-	exitText->setString("exit");
-	RectangleShape rectangle(Vector2f(0, 0));
-	rectangle.setSize(Vector2f(GAME_RESOULUTION));
-	rectangle.setTexture(textures[11]);
-	titleText->setPosition(rectangle.getSize().x / 2.5f, 0);
-	window.draw(rectangle);
-	window.draw(*titleText);
-	window.draw(*playText);
-	window.draw(*controlText);
-	window.draw(*exitText);
-	window.display();
+  window.clear(sf::Color::Black);
+  titleText->setString("Insert game name here");
+  playText->setString("Play");
+  exitText->setString("exit");
+  RectangleShape rectangle(Vector2f(0, 0));
+  rectangle.setSize(Vector2f(GAME_RESOULUTION));
+  rectangle.setTexture(textures[11]);
+  titleText->setPosition(rectangle.getSize().x / 2.5f, 0);
+  window.draw(rectangle);
+  window.draw(*titleText);
+  window.draw(*playText);
+  window.draw(*controlText);
+  window.draw(*exitText);
+  window.display();
 }
-
 
 void Render(RenderWindow &window) {
   window.clear(sf::Color::Black);
@@ -493,10 +505,11 @@ void Render(RenderWindow &window) {
   for (size_t i = 0; i < currentEnemies; i++) {
     window.draw(*enemies[i]);
   }
+  window.draw(*ps);
+
   window.draw(*scoreText);
   window.display();
 }
-
 
 int main() {
 
@@ -511,48 +524,43 @@ int main() {
   gameView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
                                  scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
 
-
   // let's define the menu view
   menuView = View(FloatRect(0, 0, GAME_RESOULUTION));
   menuView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
-	  scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
+                                 scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
 
   // let's define the control layout view
   controlView = View(FloatRect(0, 0, GAME_RESOULUTION));
   controlView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
-	  scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
- 
+                                    scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
+
+  ps = new ParticleSystem(window->getSize());
+  ps->fuel(1000);
+
   previous = high_resolution_clock::now();
 
-	  while (window->isOpen()) {
-		  if (state == Gamestates::Start)
-		  {
-			  menuUpdate(*window);
-			  menuRender(*window);
+  while (window->isOpen()) {
+    if (state == Gamestates::Start) {
+      menuUpdate(*window);
+      menuRender(*window);
 
-		  }
-		  else if (state == Gamestates::Game) {
-			  // Activate gameview
-			  Update(*window);
-			  Render(*window);
-		  }
-		  else if (state == Gamestates::Pause)
-		  {
-			  menuUpdate(*window);
-			  menuRender(*window);
-		  }
-		  else if(state == Gamestates::controls)
-		  {
-			  menuUpdate(*window);
-			  controlsRender(*window);
+    } else if (state == Gamestates::Game) {
+      // Activate gameview
+      Update(*window);
+      Render(*window);
+    } else if (state == Gamestates::Pause) {
+      menuUpdate(*window);
+      menuRender(*window);
+    } else if (state == Gamestates::controls) {
+      menuUpdate(*window);
+      controlsRender(*window);
 
-		  }
-		  else if (state == Gamestates::Dead) {
-			  menuUpdate(*window);
-			  menuRender(*window);
-		  }
-	  }
-  
+    } else if (state == Gamestates::Dead) {
+      menuUpdate(*window);
+      menuRender(*window);
+    }
+  }
+
   Unload();
   delete window;
   window = nullptr;
