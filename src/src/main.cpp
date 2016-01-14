@@ -226,11 +226,7 @@ void menuUpdate(RenderWindow &window) {
 		}
 
 
-
 		sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-
-	
-
 
 		if (exitText->getGlobalBounds().contains((sf::Vector2f)mousePosition)) {
 			exitText->setColor(Color::Red);
@@ -263,11 +259,12 @@ void menuUpdate(RenderWindow &window) {
 				playText->setPosition(0, 48);
 				controlText->setPosition(0, 148);
 				exitText->setPosition(0, 850);
-				controlText->setString("Keyboard \t\t\t"  "\t\t\t\t\t\t\t Controller" "\n\n"  "WASD  or arrow keys \t" 
+				controlText->setString("Menu controls" "\n\n" "Use the mouse to select your choice" "\n\n""controller"  "\t\t\t\tA" "\t\t\tPlay Game" "\n" "\t\t\t\t\t\t\t\t\t\t\t\tB" "\t\t\tExit Game"  "\n\n" 	
+				"Game Controls" "\n\n""Keyboard \t\t\t"  "\t\t\t\t\t\t\t Controller" "\n\n"  "WASD  or arrow keys \t" 
 				"\t\tLeft Thumbstick"	" \t\tMove ship" "\n\n"  "Space" 
-				"\t\t\t\t\t\t\t\t\t\t\t\t\t\tB"	"\t\t\t\t\t\t\t\t\t\t\t\t\tFire Bullet" 
-					"\n\n" "P" "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tA" "\t\t\t\t\t\t\t\t\t\t\t\t\tPause Game"
-					"\n\n" "Escape or exit button" "\t\tBack" "\t\t\t\t\t\t\t\t\t\t\tExit Game");
+				"\t\t\t\t\t\t\t\t\t\t\t\t\t\tA"	"\t\t\t\t\t\t\t\t\t\t\t\t\tFire Bullet" 
+					"\n\n" "P" "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tX" "\t\t\t\t\t\t\t\t\t\t\t\t\tPause Game"
+					"\n\n" "Escape or exit button" "\t\tB" "\t\t\t\t\t\t\t\t\t\t\t\t\t\tExit Game");
 			}
 			
 		}
@@ -286,6 +283,14 @@ void menuUpdate(RenderWindow &window) {
 			else if (e.key.code == Keyboard::S && state == Gamestates::Start || e.key.code == Keyboard::S && state == Gamestates::Pause) {
 				state = Gamestates::Game;
 			}
+		}
+
+		if (Joystick::isButtonPressed(0, 0)) {
+			state = Gamestates::Game;
+		}
+
+		if (Joystick::isButtonPressed(0, 1)) {
+			window.close();
 		}
 	}
 	
@@ -366,7 +371,7 @@ void Update(RenderWindow &window) {
 		  state = Gamestates::Pause;
 	
 	  }
-      if (Joystick::isButtonPressed(0, 1)) {
+      if (Joystick::isButtonPressed(0, 0)) {
         FireBullet();
       }
     }
@@ -427,7 +432,7 @@ void Update(RenderWindow &window) {
   }
 
 
-  scoreText->setString("Score =" + to_string(score + ceil(runTime)));
+  scoreText->setString("Score =" + to_string(score + ceil(runTime)) + "\n\n" "lives = " + to_string(playerlives));
 }
 
 
