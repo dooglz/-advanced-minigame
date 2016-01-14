@@ -2,7 +2,7 @@
 
 /************************************************************/
 ParticleSystem::ParticleSystem(sf::Vector2u canvasSize)
-    : m_dissolve(false), m_particleSpeed(100.0f), m_transparent(sf::Color(0, 0, 0, 0)),
+    : m_dissolve(false), m_particleSpeed(50.0f), m_transparent(sf::Color(0, 0, 0, 0)),
       m_dissolutionRate(4), m_shape(Shape::CIRCLE), m_gravity(sf::Vector2f(0.0f, 0.0f)),
       m_canvasSize(canvasSize) {
   m_startPos =
@@ -17,53 +17,74 @@ ParticleSystem::~ParticleSystem(void) {
 
 /************************************************************/
 void ParticleSystem::draw(sf::RenderTarget &target, sf::RenderStates states) const {
-  for (const auto &item : m_particles)
-    target.draw(&item.get()->drawVertex, 1, sf::Points);
+  for (const auto &item : m_particles) {
+    sf::Vertex g1 = item.get()->drawVertex;
+    sf::Vertex g2 = item.get()->drawVertex;
+    sf::Vertex g3 = item.get()->drawVertex;
+    sf::Vertex g4 = item.get()->drawVertex;
+
+    g2.position += sf::Vector2f(2, 0);
+    g3.position += sf::Vector2f(1, 1);
+    g4.position += sf::Vector2f(1, -1);
+
+    sf::Vertex tri[] = {g1, g2, g3, g4};
+
+    // target.draw(&item.get()->drawVertex, 1, sf::Points);
+    target.draw(&tri[0], 4, sf::Lines);
+  }
   return;
 }
 
 /************************************************************/
-void ParticleSystem::fuel(int particles) {
+void ParticleSystem::fuel(int particles, sf::Vector2f ySpawnRange, sf::Vector2f xSpawnRange) {
   for (int i = 0; i < particles; i++) {
-    /* Generate a new particle and put it at the generation point */
-    Particle *particle;
-    particle = new Particle();
-    particle->drawVertex.position.x = m_startPos.x;
-    particle->drawVertex.position.y = m_startPos.y;
 
     /* Randomizer initialization */
     std::random_device rd;
     std::mt19937 gen(rd());
 
-    switch (m_shape) {
-    case Shape::CIRCLE: {
-      /* Generate a random angle */
-      UniRealDist randomAngle(0.0f, (2.0f * 3.14159265));
-      float angle = randomAngle(gen);
+    UniRealDist yposition(ySpawnRange.x, ySpawnRange.y);
+    UniRealDist xposition(xSpawnRange.x, xSpawnRange.y);
+    UniRealDist yspeed(0.1f, 1.0f);
 
-      /* Use the random angle as a thrust vector for the particle */
-      // UniRealDist randomAngleCos(0.0f, cos(angle));
-      // UniRealDist randomAngleSin(0.0f, sin(angle));
-      particle->vel.x = (float)(rand() % 100) * 0.01f; // randomAngleCos(gen);
-      particle->vel.y = (float)(rand() % 100) * 0.01f; // randomAngleSin(gen);
+    /* Generate a new particle and put it at the generation point */
+    Particle *particle;
+    particle = new Particle();
+    particle->drawVertex.position.x = xposition(gen);
+    particle->drawVertex.position.y = yposition(gen);
+    particle->vel.x = 0.0f;
+    particle->vel.y = yspeed(gen);
+    /*
+        switch (m_shape) {
+        case Shape::CIRCLE: {
+          // Generate a random angle
+          UniRealDist randomAngle(0.0f, (2.0f * 3.14159265));
+          float angle = randomAngle(gen);
 
-      break;
-    }
-    case Shape::SQUARE: {
-      /* Square generation */
-      UniRealDist randomSide(-1.0f, 1.0f);
-      particle->vel.x = randomSide(gen);
-      particle->vel.y = randomSide(gen);
+          // Use the random angle as a thrust vector for the particle
+          // UniRealDist randomAngleCos(0.0f, cos(angle));
+          // UniRealDist randomAngleSin(0.0f, sin(angle));
+          particle->vel.x = (float)(rand() % 100) * 0.01f; // randomAngleCos(gen);
+          particle->vel.y = (float)(rand() % 100) * 0.01f; // randomAngleSin(gen);
 
-      break;
-    }
-    default: {
-      particle->vel.x = 0.5f; // Easily detected
-      particle->vel.y = 0.5f; // Easily detected
-    }
-    }
+          break;
+        }
+        case Shape::SQUARE: {
+          // Square generation
+          UniRealDist randomSide(-1.0f, 1.0f);
+          particle->vel.x = randomSide(gen);
+          particle->vel.y = randomSide(gen);
 
-    /* We don't want lame particles. Reject, start over. */
+          break;
+        }
+        default: {
+          particle->vel.x = 0.5f; // Easily detected
+          particle->vel.y = 0.5f; // Easily detected
+        }
+        }
+    */
+
+    // We don't want lame particles. Reject, start over.
     if (particle->vel.x == 0.0f && particle->vel.y == 0.0f) {
       delete particle;
       continue;
@@ -71,9 +92,10 @@ void ParticleSystem::fuel(int particles) {
 
     /* Randomly change the colors of the particles */
     UniIntDist randomColor(0, 255);
-    particle->drawVertex.color.r = randomColor(gen);
-    particle->drawVertex.color.g = randomColor(gen);
-    particle->drawVertex.color.b = randomColor(gen);
+    const auto a = randomColor(gen);
+    particle->drawVertex.color.r = a;
+    particle->drawVertex.color.g = a;
+    particle->drawVertex.color.b = a;
     particle->drawVertex.color.a = 255;
 
     m_particles.push_back(ParticlePtr(particle));
@@ -101,9 +123,12 @@ void ParticleSystem::update(float deltaTime) {
     (*it)->drawVertex.position.x += (*it)->vel.x * deltaTime * m_particleSpeed;
     (*it)->drawVertex.position.y += (*it)->vel.y * deltaTime * m_particleSpeed;
 
+    round((*it)->drawVertex.position.x);
+    round((*it)->drawVertex.position.y);
+
     /* If they are set to disolve, disolve */
-    if (m_dissolve)
-      (*it)->drawVertex.color.a -= m_dissolutionRate;
+    // if (m_dissolve)
+    // (*it)->drawVertex.color.a -= m_dissolutionRate;
 
     if ((*it)->drawVertex.position.x > m_canvasSize.x || (*it)->drawVertex.position.x < 0 ||
         (*it)->drawVertex.position.y > m_canvasSize.y || (*it)->drawVertex.position.y < 0 ||

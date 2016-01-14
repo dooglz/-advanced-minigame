@@ -154,7 +154,9 @@ void Loadcontent() {
   backgroundSprite = new Sprite();
   backgroundSprite->setTexture(*textures[11]);
   backgroundSprite->setPosition(GAME_WORLD_X, GAME_WORLD_Y);
-
+  auto c = backgroundSprite->getColor();
+  c.a = 100;
+  backgroundSprite->setColor(c);
   for (auto &e : enemies) {
     e = new Sprite();
     e->setTexture(*textures[(rand() % 7) + 3]);
@@ -442,10 +444,10 @@ void Update(RenderWindow &window) {
   }
 
   if (playerlives == 0) {
-    state = Gamestates::Dead;
+    // state = Gamestates::Dead;
   }
-
-  ps->update(0.02f);
+  ps->fuel(1, Vector2f(0, 0), Vector2f(0, GAME_WORLD_X));
+  ps->update(deltaSeconds);
   scoreText->setString("Score =" + to_string(score + ceil(runTime)) + "\n\n"
                                                                       "lives = " +
                        to_string(playerlives));
@@ -499,13 +501,12 @@ void Render(RenderWindow &window) {
   rectangle.setSize(Vector2f(GAME_RESOULUTION));
   rectangle.setTexture(textures[11]);
   window.draw(rectangle);
-
+  window.draw(*ps);
   window.draw(*playerSprite);
   window.draw(*bulletsprite);
   for (size_t i = 0; i < currentEnemies; i++) {
     window.draw(*enemies[i]);
   }
-  window.draw(*ps);
 
   window.draw(*scoreText);
   window.display();
@@ -535,8 +536,8 @@ int main() {
                                     scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
 
   ps = new ParticleSystem(window->getSize());
-  ps->fuel(1000);
-
+  ps->setDissolutionRate(1);
+  ps->setCanvasSize(Vector2u(GAME_RESOULUTION));
   previous = high_resolution_clock::now();
 
   while (window->isOpen()) {
