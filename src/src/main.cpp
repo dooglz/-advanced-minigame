@@ -41,9 +41,9 @@ static const string textureNames[]{"img/spaceship1.png",
                                    "img/Spaceship-Drakir6.png",
                                    "img/Spaceship-Drakir7.png",
                                    "img/bullet.png",
-                                   "img/Background.png"};
+                                   "img/Background.png","img/Explosion.png","img/Life.png","img/Shield.png","img/Missile.png"};
 
-Texture *textures[12];
+Texture *textures[16];
 Font *gameFont;
 Sprite *playerSprite;
 Sprite *backgroundSprite;
@@ -138,7 +138,7 @@ void Loadcontent() {
   exitText->setCharacterSize(24);
   exitText->setColor(Color::White);
 
-  for (size_t i = 0; i < 12; i++) {
+  for (size_t i = 0; i < 16; i++) {
     textures[i] = new Texture();
     if (!textures[i]->loadFromFile(filepath + textureNames[i])) {
       throw invalid_argument("Loading error!");
