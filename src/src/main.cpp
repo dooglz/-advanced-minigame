@@ -1,4 +1,6 @@
+#include "game.h"
 #include "particles.h"
+#include "menu.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <chrono>
@@ -7,14 +9,6 @@
 using namespace std;
 using namespace sf;
 using namespace chrono;
-
-#define MAX_ENEMIES 255
-#define DEFAULT_WINDOW_RESOULUTION_X 600  // 461
-#define DEFAULT_WINDOW_RESOULUTION_Y 1000 // 768
-#define DEFAULT_WINDOW_RESOULUTION DEFAULT_WINDOW_RESOULUTION_X, DEFAULT_WINDOW_RESOULUTION_Y
-#define GAME_WORLD_X 600
-#define GAME_WORLD_Y 1000
-#define GAME_RESOULUTION GAME_WORLD_X, GAME_WORLD_Y
 
 Vector2u scaledGameResolution;
 Vector2f scaledGameResolutionNormal;
@@ -49,11 +43,9 @@ Sprite *playerSprite;
 Sprite *backgroundSprite;
 Sprite *bulletsprite;
 Text *scoreText;
-Text *titleText;
-Text *playText;
-Text *controlText;
 Text *pausedText;
-Text *exitText;
+Menu mainMenu;
+
 int playerlives = 3;
 static Sprite *enemies[MAX_ENEMIES];
 
@@ -99,16 +91,14 @@ void Loadcontent() {
 
   gameFont = new Font();
   gameFont->loadFromFile(filepath + "/fonts/AmericanCaptain.ttf");
+
+  LoadMenu(*gameFont);
+
   scoreText = new Text();
   scoreText->setFont(*gameFont);
   scoreText->setPosition(0, 0);
   scoreText->setCharacterSize(24);
   scoreText->setColor(Color::Red);
-
-  titleText = new Text();
-  titleText->setFont(*gameFont);
-  titleText->setCharacterSize(24);
-  titleText->setColor(Color::White);
 
   pausedText = new Text();
   pausedText->setFont(*gameFont);
@@ -118,25 +108,7 @@ void Loadcontent() {
   pausedText->setColor(Color::Red);
   pausedText->Bold;
 
-  playText = new Text();
-  playText->setFont(*gameFont);
-  playText->setCharacterSize(24);
-  playText->setColor(Color::White);
 
-  controlText = new Text();
-  controlText->setFont(*gameFont);
-  controlText->setCharacterSize(24);
-  controlText->setColor(Color::White);
-
-  controlText = new Text();
-  controlText->setFont(*gameFont);
-  controlText->setCharacterSize(24);
-  controlText->setColor(Color::Blue);
-
-  exitText = new Text();
-  exitText->setFont(*gameFont);
-  exitText->setCharacterSize(24);
-  exitText->setColor(Color::White);
 
   for (size_t i = 0; i < 12; i++) {
     textures[i] = new Texture();
@@ -209,7 +181,7 @@ void ResetGame() {
 }
 
 void menuUpdate(RenderWindow &window) {
-
+	/*
   Event e;
 
   while (window.pollEvent(e)) {
@@ -311,6 +283,7 @@ void menuUpdate(RenderWindow &window) {
       window.close();
     }
   }
+  */
 }
 
 void Update(RenderWindow &window) {
@@ -453,31 +426,7 @@ void Update(RenderWindow &window) {
                        to_string(playerlives));
 }
 
-void menuRender(RenderWindow &window) {
-  window.clear(sf::Color::Black);
-  titleText->setString("Insert game name here");
-  playText->setString("Play");
-  controlText->setString("controls");
-  exitText->setString("exit");
-
-  RectangleShape rectangle(Vector2f(0, 0));
-  rectangle.setSize(Vector2f(GAME_RESOULUTION));
-  rectangle.setTexture(textures[11]);
-  titleText->setPosition(rectangle.getSize().x / 2.5f, 0);
-  playText->setPosition(rectangle.getSize().x / 2.5f, 74);
-  controlText->setPosition(rectangle.getSize().x / 2.5f, 148);
-  exitText->setPosition(rectangle.getSize().x / 2.5f, 222);
-  window.draw(rectangle);
-  window.draw(*titleText);
-  window.draw(*playText);
-  window.draw(*controlText);
-  if (state == Gamestates::Pause) {
-    window.draw(*pausedText);
-  }
-  window.draw(*exitText);
-  window.display();
-}
-
+/*
 void controlsRender(RenderWindow &window) {
   window.clear(sf::Color::Black);
   titleText->setString("Insert game name here");
@@ -494,6 +443,7 @@ void controlsRender(RenderWindow &window) {
   window.draw(*exitText);
   window.display();
 }
+*/
 
 void Render(RenderWindow &window) {
   window.clear(sf::Color::Black);
@@ -535,6 +485,13 @@ int main() {
   controlView.setViewport(FloatRect(scaledGameOffsetNormal.x, scaledGameOffsetNormal.y,
                                     scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
 
+  mainMenu = Menu();
+  mainMenu.items.push_back(new MenuItem(GAME_NAME, *gameFont));
+  mainMenu.items.push_back(new MenuButton("Start Game", *gameFont, []() {state = Gamestates::Game; }));
+  mainMenu.items.push_back(new MenuButton("Controlls", *gameFont, []() {state = Gamestates::Game; }));
+  mainMenu.items.push_back(new MenuButton("Credits", *gameFont, []() {state = Gamestates::Game; }));
+  mainMenu.items.push_back(new MenuButton("Exit", *gameFont, []() {state = Gamestates::Game; }));
+
   ps = new ParticleSystem(window->getSize());
   ps->setDissolutionRate(1);
   ps->setCanvasSize(Vector2u(GAME_RESOULUTION));
@@ -542,8 +499,14 @@ int main() {
 
   while (window->isOpen()) {
     if (state == Gamestates::Start) {
-      menuUpdate(*window);
-      menuRender(*window);
+      //menuUpdate(*window);
+		mainMenu.Update(*window);
+
+		window->clear(sf::Color::Black);
+		mainMenu.Render(*window);
+		window->display();
+
+	  //RenderMainMenu(*window);
 
     } else if (state == Gamestates::Game) {
       // Activate gameview
@@ -551,14 +514,14 @@ int main() {
       Render(*window);
     } else if (state == Gamestates::Pause) {
       menuUpdate(*window);
-      menuRender(*window);
+	  RenderMainMenu(*window);
     } else if (state == Gamestates::controls) {
       menuUpdate(*window);
-      controlsRender(*window);
+//      controlsRender(*window);
 
     } else if (state == Gamestates::Dead) {
       menuUpdate(*window);
-      menuRender(*window);
+	  RenderMainMenu(*window);
     }
   }
 
