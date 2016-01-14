@@ -38,11 +38,12 @@ static const string textureNames[]{"img/spaceship1.png",
                                    "img/Spaceship-Drakir5.png",
                                    "img/Spaceship-Drakir6.png",
                                    "img/Spaceship-Drakir7.png",
-                                   "img/bullet.png"};
+                                   "img/bullet.png", "img/Background.png"};
 
-Texture *textures[11];
+Texture *textures[12];
 Font *gameFont;
 Sprite *playerSprite;
+Sprite *backgroundSprite;
 Sprite *bulletsprite;
 Text *scoreText;
 Text *titleText;
@@ -137,7 +138,7 @@ void Loadcontent() {
  exitText->setColor(Color::White);
 
 
-  for (size_t i = 0; i < 11; i++) {
+  for (size_t i = 0; i < 12; i++) {
     textures[i] = new Texture();
     if (!textures[i]->loadFromFile(filepath + textureNames[i])) {
       throw invalid_argument("Loading error!");
@@ -149,6 +150,11 @@ void Loadcontent() {
   bulletsprite = new Sprite();
   bulletsprite->setTexture(*textures[10]);
   bulletsprite->setPosition(0, -128.0f);
+
+  backgroundSprite = new Sprite();
+  backgroundSprite->setTexture(*textures[11]);
+  backgroundSprite->setPosition(GAME_WORLD_X, GAME_WORLD_Y);
+
   for (auto &e : enemies) {
     e = new Sprite();
     e->setTexture(*textures[(rand() % 7) + 3]);
@@ -219,7 +225,11 @@ void menuUpdate(RenderWindow &window) {
 			window.setView(menuView);
 		}
 
+
+
 		sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+
+	
 
 
 		if (exitText->getGlobalBounds().contains((sf::Vector2f)mousePosition)) {
@@ -295,7 +305,7 @@ void Update(RenderWindow &window) {
   { // Input
     Event e;
     Vector2f moveDirection(0, 0);
-
+	playerSprite->setColor(Color::Red);
     while (window.pollEvent(e)) {
 
       if (e.type == Event::Closed)
@@ -431,7 +441,7 @@ void menuRender(RenderWindow &window) {
 
 	RectangleShape rectangle(Vector2f(0, 0));
 	rectangle.setSize(Vector2f(GAME_RESOULUTION));
-	rectangle.setFillColor(Color::Green);
+	rectangle.setTexture(textures[11]);
 	titleText->setPosition(rectangle.getSize().x / 2.5f, 0);
 	playText->setPosition(rectangle.getSize().x / 2.5f, 74);
 	controlText->setPosition(rectangle.getSize().x / 2.5f, 148);
@@ -455,7 +465,7 @@ void controlsRender(RenderWindow &window) {
 	exitText->setString("exit");
 	RectangleShape rectangle(Vector2f(0, 0));
 	rectangle.setSize(Vector2f(GAME_RESOULUTION));
-	rectangle.setFillColor(Color::Green);
+	rectangle.setTexture(textures[11]);
 	titleText->setPosition(rectangle.getSize().x / 2.5f, 0);
 	window.draw(rectangle);
 	window.draw(*titleText);
@@ -470,7 +480,7 @@ void Render(RenderWindow &window) {
   window.clear(sf::Color::Black);
   RectangleShape rectangle(Vector2f(0, 0));
   rectangle.setSize(Vector2f(GAME_RESOULUTION));
-  rectangle.setFillColor(Color::Green);
+  rectangle.setTexture(textures[11]);
   window.draw(rectangle);
 
   window.draw(*playerSprite);
