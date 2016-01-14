@@ -61,6 +61,14 @@ MenuItem::MenuItem(string name, Font &gameFont) {
   text.setString(name);
 }
 
+Menu::~Menu() {
+  for (auto &i : items) {
+    delete i;
+    i = nullptr;
+  }
+  items.clear();
+}
+
 void MenuItem::Update(Vector2f position, RenderWindow &window) {
   const auto tw = text.getLocalBounds().width;
   text.setPosition(position + Vector2f(0.5 * ((GAME_WORLD_X / 3) - tw), 0));
@@ -78,9 +86,9 @@ void MenuButton::Update(Vector2f position, RenderWindow &window) {
   if (mp.x > position.x && mp.y > position.y && mp.x < position.x + GAME_WORLD_X / 3 &&
       mp.y < position.y + 100.0f) {
     rectangle.setFillColor(Color::Red);
-	if (Mouse::isButtonPressed(Mouse::Left)) {
-		cb();
-	}
+    if (Mouse::isButtonPressed(Mouse::Left)) {
+      cb();
+    }
   } else {
     rectangle.setFillColor(Color::Magenta);
   }

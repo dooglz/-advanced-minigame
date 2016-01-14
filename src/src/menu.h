@@ -1,12 +1,12 @@
 #pragma once
-#include "game.h"
+#include "config.h"
 #include <SFML/Graphics.hpp>
 #include <vector>
 
 using namespace std;
 using namespace sf;
 
-typedef void(*callback)(void);
+typedef void (*callback)(void);
 
 void LoadMenu(Font &gameFont);
 void RenderMainMenu(RenderWindow &window);
@@ -28,7 +28,8 @@ struct MenuButton : public MenuItem {
 };
 
 struct Menu {
-  vector<MenuItem*> items;
+  ~Menu();
+  vector<MenuItem *> items;
   void Update(RenderWindow &window);
   void Render(RenderWindow &window);
 };

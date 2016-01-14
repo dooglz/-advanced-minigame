@@ -1,11 +1,15 @@
 #pragma once
 
-#define MAX_ENEMIES 255
-#define DEFAULT_WINDOW_RESOULUTION_X 600  // 461
-#define DEFAULT_WINDOW_RESOULUTION_Y 1000 // 768
-#define DEFAULT_WINDOW_RESOULUTION DEFAULT_WINDOW_RESOULUTION_X, DEFAULT_WINDOW_RESOULUTION_Y
-#define GAME_WORLD_X 600
-#define GAME_WORLD_Y 1000
-#define GAME_RESOULUTION GAME_WORLD_X, GAME_WORLD_Y
+#include <SFML/Graphics.hpp>
+using namespace sf;
 
-#define GAME_NAME "SPACE WARS"
+enum Gamestates { Start, Game, Pause, Dead, controls };
+
+void GameUpdate(float delta);
+void GameHandleEvent(Event &e);
+void GameRender(RenderWindow &window);
+
+void ResetGame();
+
+void LoadGameContent();
+void UnLoadGameContent();
