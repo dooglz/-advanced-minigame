@@ -178,7 +178,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Astral_Insanity_x64"
         "ProductCode" = "8:{E005D872-6B44-4B03-9149-E9BB3DD2FD42}"
-        "PackageCode" = "8:{1AD35B26-EE38-4C69-9A0B-8B8280DBA4F7}"
+        "PackageCode" = "8:{C49761B6-2FFE-45BD-BCC3-C0670441BD9C}"
         "UpgradeCode" = "8:{2FB3608C-7B2F-4BCD-AE6D-8704C0B968D4}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
