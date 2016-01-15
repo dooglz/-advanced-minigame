@@ -52,6 +52,12 @@ static const string textureNames[TEX_COUNT]{"img/spaceship1.png",
                                             "img/Missile.png",
                                             "img/Explosion.png"};
 
+enum SOUND { MISSILE, EXPLOSION, LASER, SOUND_COUNT };
+
+static const string soundNames[SOUND_COUNT]{
+  "sounds/Missile.wav", "sounds/Explosion.wav", "sounds/laser.wav"
+};
+
 #ifdef _DEBUG
 #if defined(_WIN32) || defined(_WIN64)
 #define BREAKPOINT __debugbreak();

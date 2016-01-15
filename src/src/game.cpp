@@ -56,9 +56,9 @@ void LoadGameContent() {
   explosionBuffer = new SoundBuffer();
   laserBuffer = new SoundBuffer();
 
-  fireBuffer->loadFromFile("../res/Sounds/Missile.wav");
-  explosionBuffer->loadFromFile("../res/Sounds/Explosion.wav");
-  laserBuffer->loadFromFile("../res/Sounds/laser.wav");
+  fireBuffer->loadFromFile(filepath+soundNames[MISSILE]);
+  explosionBuffer->loadFromFile(filepath + soundNames[EXPLOSION]);
+  laserBuffer->loadFromFile(filepath + soundNames[LASER]);
 
   fire->setBuffer(*fireBuffer);
   explosion->setBuffer(*explosionBuffer);
