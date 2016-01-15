@@ -253,9 +253,9 @@ void GameUpdate(float deltaSeconds) {
     } else if (powersprite->getTexture() == textures[14]) {
      
 		while (powertime >= 0) {
-			playerWeapon->cooldown_ = chrono::steady_clock::time_point::min();
+			playerWeapon->reloadTime =0;
 			powertime--;
-
+			break;
 		}
 		
       powersprite->setPosition(670, -128);
