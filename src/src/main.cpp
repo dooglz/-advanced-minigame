@@ -59,7 +59,7 @@ void Loadcontent() {
   gameFont = new Font();
   gameFont->loadFromFile(filepath + "/fonts/AmericanCaptain.ttf");
 
-  for (size_t i = 0; i < 12; i++) {
+  for (size_t i = 0; i < 15; i++) {
     textures[i] = new Texture();
     if (!textures[i]->loadFromFile(filepath + textureNames[i])) {
       throw invalid_argument("Loading error!");

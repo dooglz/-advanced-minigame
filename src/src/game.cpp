@@ -18,7 +18,7 @@ extern Texture *textures[TEX_COUNT];
 
 int playerlives = 3;
 static Sprite *enemies[MAX_ENEMIES];
-
+ int PowerChance = 0;
 static unsigned int currentEnemies = 0;
 float playerMoveSpeed = 600.0f;
 unsigned int score = 0;
@@ -168,7 +168,8 @@ void GameUpdate(float deltaSeconds) {
         if (bulletsprite->getGlobalBounds().intersects(enemies[i]->getGlobalBounds())) {
           enemies[i]->setPosition(GetNewEnemyPos());
           score += 100;
-		  static int PowerChance = rand() % 101;
+
+		  PowerChance = rand() % 101;
 		  if (PowerChance >= 30) {
 			  powersprite->setPosition(enemies[i]->getPosition().x, enemies[i]->getPosition().y + 1);
 			  powersprite->setTexture(*textures[13]);
@@ -223,8 +224,9 @@ void GameRender() {
   for (size_t i = 0; i < currentEnemies; i++) {
     window->draw(*enemies[i]);
   }
-
-
+  if (PowerChance >= 30) {
+	  window->draw(*powersprite);
+  }
 
   window->draw(*scoreText);
 }
@@ -235,6 +237,7 @@ void ResetGame() {
   currentEnemies = 0;
   playerSprite->setPosition(512, 256);
   for (auto e : enemies) {
-    e->setPosition(GetNewEnemyPos());
+   e->setPosition(GetNewEnemyPos());
   }
 }
+

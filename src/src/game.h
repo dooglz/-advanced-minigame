@@ -13,7 +13,7 @@ void ResetGame();
 
 void LoadGameContent();
 void UnLoadGameContent();
-
+void SpawnPower();
 
 struct FlyBehavior {
 	Vector2f move(Vector2f& currentPos);

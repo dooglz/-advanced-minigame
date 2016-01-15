@@ -45,7 +45,10 @@ static const string textureNames[TEX_COUNT]{"img/spaceship1.png",
                                             "img/Spaceship-Drakir6.png",
                                             "img/Spaceship-Drakir7.png",
                                             "img/bullet.png",
-                                            "img/Background.png","img/Life.png", "img/Shield.png", "img/Missile"};
+                                            "img/Background.png",
+                                            "img/Life.png",
+                                            "img/Shield.png",
+                                            "img/Missile.png"};
 
 #ifdef _DEBUG
 #if defined(_WIN32) || defined(_WIN64)
