@@ -26,6 +26,7 @@ Text *pausedText;
 ParticleSystem *ps;
 bool shielded = false;
 sf::CircleShape *shield;
+int powertime = 1000;
 
 extern RenderWindow *window;
 extern Gamestates state;
@@ -250,13 +251,20 @@ void GameUpdate(float deltaSeconds) {
 		shielded = true;
       powersprite->setPosition(670, -128);
     } else if (powersprite->getTexture() == textures[14]) {
-      cout << "missile picked up";
+     
+		while (powertime >= 0) {
+			playerWeapon->cooldown_ = chrono::steady_clock::time_point::min();
+			powertime--;
+
+		}
+		
       powersprite->setPosition(670, -128);
     }
   }
 
+  powertime = 1000;
    if (playerlives == 0) {
-    // state = Gamestates::Dead;
+     state = Gamestates::Credits;
   }
   static int pcount = 0;
   ++pcount;
