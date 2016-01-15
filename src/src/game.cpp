@@ -4,13 +4,23 @@
 #include "game.h"
 #include "particles.h"
 #include "weapon.h"
+#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include <stack>
 
 Sprite *playerSprite;
 Sprite *backgroundSprite;
 
 Sprite *powersprite;
+
+Sound *fire;
+Sound *explosion;
+Sound *laser;
+SoundBuffer *fireBuffer;
+SoundBuffer *explosionBuffer;
+SoundBuffer *laserBuffer;
+
 Text *scoreText;
 Text *pausedText;
 ParticleSystem *ps;
@@ -28,7 +38,7 @@ vector<EnemyShip *> enemies;
 int PowerChance = 0;
 static unsigned int currentEnemies = 0;
 float playerMoveSpeed = 600.0f;
-unsigned int score = 0;
+unsigned score = 0;
 float runTime = 0; // time in seconds that the game has been running
 
 void LoadGameContent() {
@@ -38,11 +48,28 @@ void LoadGameContent() {
   scoreText->setCharacterSize(24);
   scoreText->setColor(Color::Red);
 
+  fire = new Sound();
+  explosion = new Sound();
+  laser = new Sound();
+
+  fireBuffer = new SoundBuffer();
+  explosionBuffer = new SoundBuffer();
+  laserBuffer = new SoundBuffer();
+
+  fireBuffer->loadFromFile("../res/Sounds/Missile.wav");
+  explosionBuffer->loadFromFile("../res/Sounds/Explosion.wav");
+  laserBuffer->loadFromFile("../res/Sounds/laser.wav");
+
+  fire->setBuffer(*fireBuffer);
+  explosion->setBuffer(*explosionBuffer);
+  laser->setBuffer(*laserBuffer);
+
   playerSprite = new Sprite();
   playerSprite->setTexture(*textures[0]);
   playerSprite->setPosition(512, 256);
 
   powersprite = new Sprite();
+  powersprite->setScale(2.0f, 2.0f);
 
   backgroundSprite = new Sprite();
   backgroundSprite->setTexture(*textures[11]);
@@ -115,7 +142,9 @@ void GameUpdate(float deltaSeconds) {
   }
 
   if (Keyboard::isKeyPressed(Keyboard::Space)) {
+
     playerWeapon->Fire();
+    fire->play();
   }
 
   Vector2f moveDirection(0, 0);
@@ -149,6 +178,7 @@ void GameUpdate(float deltaSeconds) {
     }
     if (Joystick::isButtonPressed(0, 0)) {
       playerWeapon->Fire();
+      fire->play();
     }
   }
   if (playerSprite->getPosition().x < 0) {
@@ -168,28 +198,56 @@ void GameUpdate(float deltaSeconds) {
 
   playerSprite->setPosition(playerSprite->getPosition() + moveDirection);
 
+  int lifespan = 1000;
+
   for (size_t i = 0; i < enemies.size(); i++) {
     auto e = enemies[i];
     e->Update(deltaSeconds);
     if (!e->alive) {
       PowerChance = rand() % 101;
       if (PowerChance >= 30) {
-        powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
-        powersprite->setTexture(*textures[13]);
+        while (lifespan >= 0) {
+          powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
+          powersprite->setTexture(*textures[13]);
+          lifespan--;
+          break;
+        }
       }
       if (PowerChance >= 60) {
-        powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
-        powersprite->setTexture(*textures[14]);
+        while (lifespan >= 0) {
+          powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
+          powersprite->setTexture(*textures[14]);
+          lifespan--;
+          break;
+        }
       }
       if (PowerChance >= 90) {
-        powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
-        powersprite->setTexture(*textures[12]);
+        while (lifespan >= 0) {
+          powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
+          powersprite->setTexture(*textures[12]);
+          lifespan--;
+          break;
+        }
       }
 
+      lifespan = 1000;
       delete e;
       enemies[i] = nullptr;
       enemies.erase(enemies.begin() + i);
       --i;
+    }
+  }
+
+  if (playerSprite->getGlobalBounds().intersects(powersprite->getGlobalBounds())) {
+    if (powersprite->getTexture() == textures[12]) {
+      playerlives += 1;
+      powersprite->setPosition(670, -128);
+    } else if (powersprite->getTexture() == textures[13]) {
+      cout << "shield picked up";
+      powersprite->setPosition(670, -128);
+    } else if (powersprite->getTexture() == textures[14]) {
+      cout << "missile picked up";
+      powersprite->setPosition(670, -128);
     }
   }
 

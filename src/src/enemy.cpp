@@ -4,6 +4,7 @@ extern stack<Sprite *> unusedSprites;
 extern Texture *textures[TEX_COUNT];
 extern Sprite *playerSprite;
 extern Sprite *bulletsprite;
+extern unsigned score;
 extern int playerlives;
 extern float runTime;
 
