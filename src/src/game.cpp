@@ -53,6 +53,8 @@ void LoadGameContent() {
 
   ps = new ParticleSystem(Vector2u(GAME_RESOULUTION));
   ps->setDissolutionRate(1);
+  //prefuel
+  ps->fuel(250, Vector2f(0, GAME_WORLD_Y), Vector2f(0, GAME_WORLD_X));
 }
 void UnLoadGameContent() {
   scoreText = new Text();
@@ -184,7 +186,14 @@ void GameUpdate(float deltaSeconds) {
   if (playerlives == 0) {
     // state = Gamestates::Dead;
   }
+  static int pcount = 0;
+  ++pcount;
+  if(pcount % 5 ==0){
   ps->fuel(1, Vector2f(0, 0), Vector2f(0, GAME_WORLD_X));
+  pcount = 0;
+  ps->fuel(1, Vector2f(0, 0), Vector2f(0, GAME_WORLD_X));
+  }
+ 
   ps->update(deltaSeconds);
   scoreText->setString("Score =" + to_string(score + ceil(runTime)) + "\n\n"
                                                                       "lives = " +

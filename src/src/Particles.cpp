@@ -45,15 +45,15 @@ void ParticleSystem::fuel(int particles, sf::Vector2f ySpawnRange, sf::Vector2f 
 
     UniRealDist yposition(ySpawnRange.x, ySpawnRange.y);
     UniRealDist xposition(xSpawnRange.x, xSpawnRange.y);
-    UniRealDist yspeed(0.1f, 1.0f);
-
+    UniRealDist yspeed(10.0f, 40.0f);
+	m_particleSpeed = yspeed(gen);
     /* Generate a new particle and put it at the generation point */
     Particle *particle;
     particle = new Particle();
     particle->drawVertex.position.x = xposition(gen);
     particle->drawVertex.position.y = yposition(gen);
     particle->vel.x = 0.0f;
-    particle->vel.y = yspeed(gen);
+    particle->vel.y = 1.0f;
     /*
         switch (m_shape) {
         case Shape::CIRCLE: {
@@ -91,11 +91,10 @@ void ParticleSystem::fuel(int particles, sf::Vector2f ySpawnRange, sf::Vector2f 
     }
 
     /* Randomly change the colors of the particles */
-    UniIntDist randomColor(0, 255);
-    const auto a = randomColor(gen);
-    particle->drawVertex.color.r = a;
-    particle->drawVertex.color.g = a;
-    particle->drawVertex.color.b = a;
+	const auto a = (((m_particleSpeed - 10.0f) / 30.0f)* 255.0f)+0;
+    particle->drawVertex.color.r = 255;
+    particle->drawVertex.color.g = 255 -a;
+    particle->drawVertex.color.b = 255 - a;
     particle->drawVertex.color.a = 255;
 
     m_particles.push_back(ParticlePtr(particle));
@@ -123,8 +122,8 @@ void ParticleSystem::update(float deltaTime) {
     (*it)->drawVertex.position.x += (*it)->vel.x * deltaTime * m_particleSpeed;
     (*it)->drawVertex.position.y += (*it)->vel.y * deltaTime * m_particleSpeed;
 
-    (*it)->drawVertex.position.x = round((*it)->drawVertex.position.x);
-    (*it)->drawVertex.position.y = round((*it)->drawVertex.position.y);
+    //(*it)->drawVertex.position.x = round((*it)->drawVertex.position.x);
+    //(*it)->drawVertex.position.y = round((*it)->drawVertex.position.y);
 
     /* If they are set to disolve, disolve */
     // if (m_dissolve)

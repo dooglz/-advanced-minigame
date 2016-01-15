@@ -13,3 +13,14 @@ void ResetGame();
 
 void LoadGameContent();
 void UnLoadGameContent();
+
+
+struct FlyBehavior {
+	Vector2f move(Vector2f& currentPos);
+};
+
+struct EnemyShip {
+	float health;
+	float damageOnCollide;
+	FlyBehavior* flyB;
+};
