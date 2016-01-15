@@ -251,7 +251,7 @@ void GameUpdate(float deltaSeconds) {
     }
   }
 
-  if (playerlives == 0) {
+   if (playerlives == 0) {
     // state = Gamestates::Dead;
   }
   static int pcount = 0;
