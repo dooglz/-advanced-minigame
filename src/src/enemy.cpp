@@ -63,11 +63,11 @@ EnemyShip::~EnemyShip() {
 namespace Ships {
 Frigate::Frigate() : EnemyShip(1.0f, 10.0f, 50.0f, new FlyBehaviors::ZigZag(), textures[enemy3]) {}
 Destroyer::Destroyer()
-    : EnemyShip(1.0f, 10.0f, 50.0f, new FlyBehaviors::Standard(), textures[enemy5]) {}
+    : EnemyShip(10.0f, 10.0f, 80.0f, new FlyBehaviors::Standard(), textures[enemy5]) {}
 BattleCruiser::BattleCruiser()
-    : EnemyShip(1.0f, 10.0f, 50.0f, new FlyBehaviors::Standard(), textures[enemy2]) {}
+    : EnemyShip(20.0f, 10.0f, 50.0f, new FlyBehaviors::Standard(), textures[enemy2]) {}
 Cruiser::Cruiser()
-    : EnemyShip(1.0f, 10.0f, 50.0f, new FlyBehaviors::Standard(), textures[enemy1]) {}
+    : EnemyShip(50.0f, 10.0f, 60.0f, new FlyBehaviors::Standard(), textures[enemy1]) {}
 BattleShip::BattleShip()
-    : EnemyShip(1.0f, 10.0f, 50.0f, new FlyBehaviors::Standard(), textures[enemy4]) {}
+    : EnemyShip(100.0f, 10.0f, 40.0f, new FlyBehaviors::Standard(), textures[enemy4]) {}
 }

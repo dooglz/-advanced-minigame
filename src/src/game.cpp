@@ -102,7 +102,20 @@ void GameUpdate(float deltaSeconds) {
   currentEnemies = min((int)ceil(runTime * 0.6f) + 1, MAX_ENEMIES);
 
   if (currentEnemies > enemies.size()) {
-    enemies.push_back(new Ships::Frigate());
+    const auto r = rand() % 100;
+    if (r < 30) {
+      enemies.push_back(new Ships::Frigate());
+    } else if (r < 40) {
+      enemies.push_back(new Ships::Destroyer());
+    } else if (r < 50) {
+      enemies.push_back(new Ships::Cruiser());
+    } else if (r < 60) {
+      enemies.push_back(new Ships::BattleCruiser());
+    } else if (r < 70) {
+      enemies.push_back(new Ships::BattleShip());
+    } else {
+      enemies.push_back(new Ships::Frigate());
+    }
   }
 
   if (Keyboard::isKeyPressed(Keyboard::Space)) {
