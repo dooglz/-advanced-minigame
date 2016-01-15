@@ -4,6 +4,7 @@ extern stack<Sprite *> unusedSprites;
 extern Texture *textures[TEX_COUNT];
 extern Sprite *playerSprite;
 extern Sprite *bulletsprite;
+extern unsigned score;
 extern int playerlives;
 static Vector2f GetNewEnemyPos() { return Vector2f((float)(rand() % GAME_WORLD_X), -128.0f); }
 
@@ -35,6 +36,7 @@ void EnemyShip::Update(float deltaSeconds) {
     --playerlives;
   } else if (spr->getGlobalBounds().intersects(bulletsprite->getGlobalBounds())) {
     alive = false;
+	score += 100;
   }
 }
 

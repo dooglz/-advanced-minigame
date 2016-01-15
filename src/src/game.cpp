@@ -35,7 +35,7 @@ vector<EnemyShip *> enemies;
 int PowerChance = 0;
 static unsigned int currentEnemies = 0;
 float playerMoveSpeed = 600.0f;
-unsigned int score = 0;
+unsigned score = 0;
 float runTime = 0; // time in seconds that the game has been running
 
 void LoadGameContent() {
