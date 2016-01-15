@@ -69,8 +69,9 @@ public:
 
   virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 
-  void fuel(int particles, sf::Vector2f ySpawnRange, sf::Vector2f xSpawnRange);     /*< Adds new particles */
-  void update(float deltaTime); /*< Updates particles */
+  void fuel(int particles, sf::Vector2f ySpawnRange,
+            sf::Vector2f xSpawnRange); /*< Adds new particles */
+  void update(float deltaTime);        /*< Updates particles */
 
 private:
   /* Data Members */

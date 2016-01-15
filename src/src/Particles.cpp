@@ -46,7 +46,7 @@ void ParticleSystem::fuel(int particles, sf::Vector2f ySpawnRange, sf::Vector2f 
     UniRealDist yposition(ySpawnRange.x, ySpawnRange.y);
     UniRealDist xposition(xSpawnRange.x, xSpawnRange.y);
     UniRealDist yspeed(10.0f, 40.0f);
-	m_particleSpeed = yspeed(gen);
+    m_particleSpeed = yspeed(gen);
     /* Generate a new particle and put it at the generation point */
     Particle *particle;
     particle = new Particle();
@@ -91,9 +91,9 @@ void ParticleSystem::fuel(int particles, sf::Vector2f ySpawnRange, sf::Vector2f 
     }
 
     /* Randomly change the colors of the particles */
-	const auto a = (((m_particleSpeed - 10.0f) / 30.0f)* 255.0f)+0;
+    const auto a = (((m_particleSpeed - 10.0f) / 30.0f) * 255.0f) + 0;
     particle->drawVertex.color.r = 255;
-    particle->drawVertex.color.g = 255 -a;
+    particle->drawVertex.color.g = 255 - a;
     particle->drawVertex.color.b = 255 - a;
     particle->drawVertex.color.a = 255;
 

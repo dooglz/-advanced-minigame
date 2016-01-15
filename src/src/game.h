@@ -14,6 +14,4 @@ void ResetGame();
 void LoadGameContent();
 void UnLoadGameContent();
 
-
 void SpawnPower();
-

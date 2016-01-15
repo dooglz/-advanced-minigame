@@ -38,7 +38,7 @@ void EnemyShip::Update(float deltaSeconds) {
   }
 }
 
-EnemyShip::EnemyShip(float h, float d, float s, FlyBehavior* f, Texture *t) {
+EnemyShip::EnemyShip(float h, float d, float s, FlyBehavior *f, Texture *t) {
   flyB = f;
   speed = s;
   damageOnCollide = d;
@@ -61,11 +61,13 @@ EnemyShip::~EnemyShip() {
 }
 
 namespace Ships {
-Frigate::Frigate() : EnemyShip(1.0f, 10.0f, 50.0f, new FlyBehaviors::ZigZag(), textures[enemy1]) {}
-Destroyer::Destroyer() : EnemyShip(1.0f, 10.0f, 50.0f, new FlyBehaviors::Standard(), textures[enemy2]) {}
-BattleCruiser::BattleCruiser()
-    : EnemyShip(1.0f, 10.0f, 50.0f, new FlyBehaviors::Standard(), textures[enemy3]) {}
-Cruiser::Cruiser() : EnemyShip(1.0f, 10.0f, 50.0f, new FlyBehaviors::Standard(), textures[enemy4]) {}
-BattleShip::BattleShip()
+Frigate::Frigate() : EnemyShip(1.0f, 10.0f, 50.0f, new FlyBehaviors::ZigZag(), textures[enemy3]) {}
+Destroyer::Destroyer()
     : EnemyShip(1.0f, 10.0f, 50.0f, new FlyBehaviors::Standard(), textures[enemy5]) {}
+BattleCruiser::BattleCruiser()
+    : EnemyShip(1.0f, 10.0f, 50.0f, new FlyBehaviors::Standard(), textures[enemy2]) {}
+Cruiser::Cruiser()
+    : EnemyShip(1.0f, 10.0f, 50.0f, new FlyBehaviors::Standard(), textures[enemy1]) {}
+BattleShip::BattleShip()
+    : EnemyShip(1.0f, 10.0f, 50.0f, new FlyBehaviors::Standard(), textures[enemy4]) {}
 }

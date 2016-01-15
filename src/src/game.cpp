@@ -1,7 +1,7 @@
 #include "config.h"
 #include "enemy.h"
-#include "game.h"
 #include "enemy.h"
+#include "game.h"
 #include "particles.h"
 #include <SFML/Graphics.hpp>
 #include <stack>
@@ -98,7 +98,7 @@ void Normalize(Vector2f &v) {
 }
 
 void GameUpdate(float deltaSeconds) {
-	runTime += deltaSeconds;
+  runTime += deltaSeconds;
   currentEnemies = min((int)ceil(runTime * 0.6f) + 1, MAX_ENEMIES);
 
   if (currentEnemies > enemies.size()) {
@@ -167,25 +167,25 @@ void GameUpdate(float deltaSeconds) {
   for (size_t i = 0; i < enemies.size(); i++) {
     auto e = enemies[i];
     e->Update(deltaSeconds);
-	if (!e->alive) {
-		PowerChance = rand() % 101;
-		if (PowerChance >= 30) {
-			powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
-			powersprite->setTexture(*textures[13]);
-		}
-		if (PowerChance >= 60) {
-			powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
-			powersprite->setTexture(*textures[14]);
-		}
-		if (PowerChance >= 90) {
-			powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
-			powersprite->setTexture(*textures[12]);
-		}
+    if (!e->alive) {
+      PowerChance = rand() % 101;
+      if (PowerChance >= 30) {
+        powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
+        powersprite->setTexture(*textures[13]);
+      }
+      if (PowerChance >= 60) {
+        powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
+        powersprite->setTexture(*textures[14]);
+      }
+      if (PowerChance >= 90) {
+        powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
+        powersprite->setTexture(*textures[12]);
+      }
 
-		delete e;
-		enemies[i] = nullptr;
-		enemies.erase(enemies.begin() + i);
-		--i;
+      delete e;
+      enemies[i] = nullptr;
+      enemies.erase(enemies.begin() + i);
+      --i;
     }
   }
 
@@ -215,9 +215,8 @@ void GameRender() {
     window->draw(*e->spr);
   }
 
-  
   if (PowerChance >= 30) {
-	  window->draw(*powersprite);
+    window->draw(*powersprite);
   }
   window->draw(*powersprite);
   window->draw(*scoreText);

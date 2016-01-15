@@ -190,7 +190,8 @@ int main() {
   mainMenu.items.push_back(new MenuButton("Exit", *gameFont, []() { window->close(); }));
   controlsMenu = Menu();
   controlsMenu.items.push_back(new MenuItem("Controls", *gameFont));
-  controlsMenu.items.push_back(new MenuItem("WASD / arrow keys / Left Thumbstick\t\tMove ship", *gameFont));
+  controlsMenu.items.push_back(
+      new MenuItem("WASD / arrow keys / Left Thumbstick\t\tMove ship", *gameFont));
   controlsMenu.items.push_back(new MenuItem("Space Bar/ A Button\t\tFire Missile", *gameFont));
   controlsMenu.items.push_back(new MenuItem(" P/ X button\t\tPause Game", *gameFont));
   controlsMenu.items.push_back(new MenuItem(" Escape/ B button\t\tExit Game", *gameFont));
