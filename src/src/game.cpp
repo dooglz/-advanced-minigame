@@ -1,7 +1,9 @@
-#include "game.h"
 #include "config.h"
+#include "enemy.h"
+#include "game.h"
 #include "particles.h"
 #include <SFML/Graphics.hpp>
+#include <stack>
 
 Sprite *playerSprite;
 Sprite *backgroundSprite;
@@ -16,14 +18,13 @@ extern Font *gameFont;
 extern Texture *textures[TEX_COUNT];
 
 int playerlives = 3;
-static Sprite *enemies[MAX_ENEMIES];
+stack<Sprite *> unusedSprites;
+vector<EnemyShip *> enemies;
 
 static unsigned int currentEnemies = 0;
 float playerMoveSpeed = 600.0f;
 unsigned int score = 0;
 float runTime = 0; // time in seconds that the game has been running
-
-static Vector2f GetNewEnemyPos() { return Vector2f((float)(rand() % GAME_WORLD_Y), -128.0f); }
 
 void LoadGameContent() {
   scoreText = new Text();
@@ -45,15 +46,16 @@ void LoadGameContent() {
   auto c = backgroundSprite->getColor();
   c.a = 100;
   backgroundSprite->setColor(c);
-  for (auto &e : enemies) {
-    e = new Sprite();
-    e->setTexture(*textures[(rand() % 7) + 3]);
-    e->setPosition(GetNewEnemyPos());
+
+  for (size_t i = 0; i < MAX_ENEMIES; i++) {
+    Sprite *s = new Sprite();
+    s->setPosition(0, -200.0f);
+    unusedSprites.push(s);
   }
 
   ps = new ParticleSystem(Vector2u(GAME_RESOULUTION));
   ps->setDissolutionRate(1);
-  //prefuel
+  // prefuel
   ps->fuel(250, Vector2f(0, GAME_WORLD_Y), Vector2f(0, GAME_WORLD_X));
 }
 void UnLoadGameContent() {
@@ -94,6 +96,10 @@ void Normalize(Vector2f &v) {
 void GameUpdate(float deltaSeconds) {
   runTime += deltaSeconds;
   currentEnemies = min((int)ceil(runTime * 0.6f) + 1, MAX_ENEMIES);
+
+  if (currentEnemies > enemies.size()) {
+    enemies.push_back(new Ships::Frigate());
+  }
 
   if (Keyboard::isKeyPressed(Keyboard::Space)) {
     FireBullet();
@@ -154,32 +160,14 @@ void GameUpdate(float deltaSeconds) {
                               bulletsprite->getPosition().y - 1000.0f * deltaSeconds);
   }
 
-  for (size_t i = 0; i < MAX_ENEMIES; i++) {
-    if (i < currentEnemies) {
-      // if not dead, move
-      if (enemies[i]->getPosition().y < GAME_WORLD_X) {
-        enemies[i]->setPosition(
-            enemies[i]->getPosition() +
-            Vector2f(sinf(runTime + i) * 100.0f * deltaSeconds, 50.0f * deltaSeconds));
-        // collisions
-        if (bulletsprite->getGlobalBounds().intersects(enemies[i]->getGlobalBounds())) {
-          enemies[i]->setPosition(GetNewEnemyPos());
-          score += 100;
-        }
-        if (playerSprite->getGlobalBounds().intersects(enemies[i]->getGlobalBounds())) {
-          enemies[i]->setPosition(GetNewEnemyPos());
-          playerlives -= 1;
-        }
-      } else {
-        // enemy is offscreen, kill
-        enemies[i]->setPosition(GetNewEnemyPos());
-      }
-    } else {
-      // if alive
-      if (enemies[i]->getPosition().y != -128.0f) {
-        // kill
-        enemies[i]->setPosition(GetNewEnemyPos());
-      }
+  for (size_t i = 0; i < enemies.size(); i++) {
+    auto e = enemies[i];
+    e->Update(deltaSeconds);
+    if (!e->alive) {
+      delete e;
+      enemies[i] = nullptr;
+      enemies.erase(enemies.begin() + i);
+      --i;
     }
   }
 
@@ -188,12 +176,12 @@ void GameUpdate(float deltaSeconds) {
   }
   static int pcount = 0;
   ++pcount;
-  if(pcount % 5 ==0){
-  ps->fuel(1, Vector2f(0, 0), Vector2f(0, GAME_WORLD_X));
-  pcount = 0;
-  ps->fuel(1, Vector2f(0, 0), Vector2f(0, GAME_WORLD_X));
+  if (pcount % 5 == 0) {
+    ps->fuel(1, Vector2f(0, 0), Vector2f(0, GAME_WORLD_X));
+    pcount = 0;
+    ps->fuel(1, Vector2f(0, 0), Vector2f(0, GAME_WORLD_X));
   }
- 
+
   ps->update(deltaSeconds);
   scoreText->setString("Score =" + to_string(score + ceil(runTime)) + "\n\n"
                                                                       "lives = " +
@@ -204,8 +192,9 @@ void GameRender() {
   window->draw(*ps);
   window->draw(*playerSprite);
   window->draw(*bulletsprite);
-  for (size_t i = 0; i < currentEnemies; i++) {
-    window->draw(*enemies[i]);
+
+  for (auto &e : enemies) {
+    window->draw(*e->spr);
   }
 
   window->draw(*scoreText);
@@ -217,6 +206,7 @@ void ResetGame() {
   currentEnemies = 0;
   playerSprite->setPosition(512, 256);
   for (auto e : enemies) {
-    e->setPosition(GetNewEnemyPos());
+    delete e;
   }
+  enemies.clear();
 }
