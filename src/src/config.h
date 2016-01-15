@@ -27,6 +27,9 @@ enum TEX {
   enemy7,
   bullet,
   Background,
+  Life,
+  Shield,
+  Missile,
   TEX_COUNT
 };
 
@@ -42,7 +45,7 @@ static const string textureNames[TEX_COUNT]{"img/spaceship1.png",
                                             "img/Spaceship-Drakir6.png",
                                             "img/Spaceship-Drakir7.png",
                                             "img/bullet.png",
-                                            "img/Background.png"};
+                                            "img/Background.png","img/Life.png", "img/Shield.png", "img/Missile"};
 
 #ifdef _DEBUG
 #if defined(_WIN32) || defined(_WIN64)

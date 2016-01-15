@@ -6,6 +6,7 @@
 Sprite *playerSprite;
 Sprite *backgroundSprite;
 Sprite *bulletsprite;
+Sprite *powersprite;
 Text *scoreText;
 Text *pausedText;
 ParticleSystem *ps;
@@ -38,6 +39,8 @@ void LoadGameContent() {
   bulletsprite = new Sprite();
   bulletsprite->setTexture(*textures[10]);
   bulletsprite->setPosition(0, -128.0f);
+
+  powersprite = new Sprite();
 
   backgroundSprite = new Sprite();
   backgroundSprite->setTexture(*textures[11]);
@@ -92,7 +95,7 @@ void Normalize(Vector2f &v) {
 }
 
 void GameUpdate(float deltaSeconds) {
-  runTime += deltaSeconds;
+	runTime += deltaSeconds;
   currentEnemies = min((int)ceil(runTime * 0.6f) + 1, MAX_ENEMIES);
 
   if (Keyboard::isKeyPressed(Keyboard::Space)) {
@@ -165,6 +168,19 @@ void GameUpdate(float deltaSeconds) {
         if (bulletsprite->getGlobalBounds().intersects(enemies[i]->getGlobalBounds())) {
           enemies[i]->setPosition(GetNewEnemyPos());
           score += 100;
+		  static int PowerChance = rand() % 101;
+		  if (PowerChance >= 30) {
+			  powersprite->setPosition(enemies[i]->getPosition().x, enemies[i]->getPosition().y + 1);
+			  powersprite->setTexture(*textures[13]);
+		  }
+		  else if (PowerChance >= 60) {
+			  powersprite->setPosition(enemies[i]->getPosition().x, enemies[i]->getPosition().y + 1);
+			  powersprite->setTexture(*textures[14]);
+		  }
+		  else if (PowerChance >= 90) {
+			  powersprite->setPosition(enemies[i]->getPosition().x, enemies[i]->getPosition().y + 1);
+			  powersprite->setTexture(*textures[12]);
+		  }
         }
         if (playerSprite->getGlobalBounds().intersects(enemies[i]->getGlobalBounds())) {
           enemies[i]->setPosition(GetNewEnemyPos());
@@ -207,6 +223,8 @@ void GameRender() {
   for (size_t i = 0; i < currentEnemies; i++) {
     window->draw(*enemies[i]);
   }
+
+
 
   window->draw(*scoreText);
 }
