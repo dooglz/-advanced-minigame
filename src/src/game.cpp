@@ -24,6 +24,8 @@ SoundBuffer *laserBuffer;
 Text *scoreText;
 Text *pausedText;
 ParticleSystem *ps;
+bool shielded = false;
+sf::CircleShape *shield;
 
 extern RenderWindow *window;
 extern Gamestates state;
@@ -51,6 +53,8 @@ void LoadGameContent() {
   fire = new Sound();
   explosion = new Sound();
   laser = new Sound();
+  shield = new CircleShape(20,120);
+  
 
   fireBuffer = new SoundBuffer();
   explosionBuffer = new SoundBuffer();
@@ -243,7 +247,7 @@ void GameUpdate(float deltaSeconds) {
       playerlives += 1;
       powersprite->setPosition(670, -128);
     } else if (powersprite->getTexture() == textures[13]) {
-      cout << "shield picked up";
+		shielded = true;
       powersprite->setPosition(670, -128);
     } else if (powersprite->getTexture() == textures[14]) {
       cout << "missile picked up";
@@ -271,7 +275,19 @@ void GameUpdate(float deltaSeconds) {
 void GameRender() {
   window->draw(*ps);
   playerWeapon->Render();
+  
+  if (shielded == true) {
+	  
+	  shield->setPosition(playerSprite->getPosition().x + 12,playerSprite->getPosition().y+10);
+	  shield->setFillColor(Color::Transparent);
+	  shield->setOutlineThickness(5);
+	  shield->setOutlineColor(Color::Blue);
+
+	  window->draw(*shield);
+  }
   window->draw(*playerSprite);
+
+
 
   for (auto &e : enemies) {
     window->draw(*e->spr);

@@ -4,6 +4,7 @@ extern stack<Sprite *> unusedSprites;
 extern Texture *textures[TEX_COUNT];
 extern Sprite *playerSprite;
 extern Sprite *bulletsprite;
+extern bool shielded;
 extern unsigned score;
 extern int playerlives;
 extern float runTime;
@@ -53,7 +54,13 @@ void EnemyShip::Update(float deltaSeconds) {
     alive = false;
   } else if (spr->getGlobalBounds().intersects(playerSprite->getGlobalBounds())) {
     alive = false;
-    --playerlives;
+	if (shielded == false) {
+		--playerlives;
+	}
+	else if (shielded == true) {
+		shielded = false;
+	}
+
   }
 }
 
