@@ -1,6 +1,7 @@
 #include "config.h"
 #include "enemy.h"
 #include "game.h"
+#include "enemy.h"
 #include "particles.h"
 #include <SFML/Graphics.hpp>
 #include <stack>
@@ -8,6 +9,7 @@
 Sprite *playerSprite;
 Sprite *backgroundSprite;
 Sprite *bulletsprite;
+Sprite *powersprite;
 Text *scoreText;
 Text *pausedText;
 ParticleSystem *ps;
@@ -20,7 +22,7 @@ extern Texture *textures[TEX_COUNT];
 int playerlives = 3;
 stack<Sprite *> unusedSprites;
 vector<EnemyShip *> enemies;
-
+int PowerChance = 0;
 static unsigned int currentEnemies = 0;
 float playerMoveSpeed = 600.0f;
 unsigned int score = 0;
@@ -39,6 +41,8 @@ void LoadGameContent() {
   bulletsprite = new Sprite();
   bulletsprite->setTexture(*textures[10]);
   bulletsprite->setPosition(0, -128.0f);
+
+  powersprite = new Sprite();
 
   backgroundSprite = new Sprite();
   backgroundSprite->setTexture(*textures[11]);
@@ -94,7 +98,7 @@ void Normalize(Vector2f &v) {
 }
 
 void GameUpdate(float deltaSeconds) {
-  runTime += deltaSeconds;
+	runTime += deltaSeconds;
   currentEnemies = min((int)ceil(runTime * 0.6f) + 1, MAX_ENEMIES);
 
   if (currentEnemies > enemies.size()) {
@@ -163,11 +167,25 @@ void GameUpdate(float deltaSeconds) {
   for (size_t i = 0; i < enemies.size(); i++) {
     auto e = enemies[i];
     e->Update(deltaSeconds);
-    if (!e->alive) {
-      delete e;
-      enemies[i] = nullptr;
-      enemies.erase(enemies.begin() + i);
-      --i;
+	if (!e->alive) {
+		PowerChance = rand() % 101;
+		if (PowerChance >= 30) {
+			powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
+			powersprite->setTexture(*textures[13]);
+		}
+		if (PowerChance >= 60) {
+			powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
+			powersprite->setTexture(*textures[14]);
+		}
+		if (PowerChance >= 90) {
+			powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
+			powersprite->setTexture(*textures[12]);
+		}
+
+		delete e;
+		enemies[i] = nullptr;
+		enemies.erase(enemies.begin() + i);
+		--i;
     }
   }
 
@@ -197,6 +215,11 @@ void GameRender() {
     window->draw(*e->spr);
   }
 
+  
+  if (PowerChance >= 30) {
+	  window->draw(*powersprite);
+  }
+  window->draw(*powersprite);
   window->draw(*scoreText);
 }
 

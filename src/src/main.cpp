@@ -59,7 +59,7 @@ void Loadcontent() {
   gameFont = new Font();
   gameFont->loadFromFile(filepath + "/fonts/AmericanCaptain.ttf");
 
-  for (size_t i = 0; i < 12; i++) {
+  for (size_t i = 0; i < 15; i++) {
     textures[i] = new Texture();
     if (!textures[i]->loadFromFile(filepath + textureNames[i])) {
       throw invalid_argument("Loading error!");
@@ -190,13 +190,24 @@ int main() {
   mainMenu.items.push_back(new MenuButton("Exit", *gameFont, []() { window->close(); }));
   controlsMenu = Menu();
   controlsMenu.items.push_back(new MenuItem("Controls", *gameFont));
-  controlsMenu.items.push_back(
-      new MenuItem("WASD / arrow keys / Left Thumbstick\t\tMove ship", *gameFont));
+  controlsMenu.items.push_back(new MenuItem("WASD / arrow keys / Left Thumbstick\t\tMove ship", *gameFont));
+  controlsMenu.items.push_back(new MenuItem("Space Bar/ A Button\t\tFire Missile", *gameFont));
+  controlsMenu.items.push_back(new MenuItem(" P/ X button\t\tPause Game", *gameFont));
+  controlsMenu.items.push_back(new MenuItem(" Escape/ B button\t\tExit Game", *gameFont));
+  controlsMenu.items.push_back(new MenuItem("", *gameFont));
+  controlsMenu.items.push_back(new MenuItem("", *gameFont));
+  controlsMenu.items.push_back(new MenuItem("", *gameFont));
   controlsMenu.items.push_back(new MenuButton("Back", *gameFont, []() { state = Start; }));
   creditsMenu = Menu();
   creditsMenu.items.push_back(new MenuItem("Credits", *gameFont));
   creditsMenu.items.push_back(new MenuItem("Neil Notman", *gameFont));
   creditsMenu.items.push_back(new MenuItem("Sam Serrels", *gameFont));
+  creditsMenu.items.push_back(new MenuItem("", *gameFont));
+  creditsMenu.items.push_back(new MenuItem("", *gameFont));
+  creditsMenu.items.push_back(new MenuItem("", *gameFont));
+  creditsMenu.items.push_back(new MenuItem("", *gameFont));
+  creditsMenu.items.push_back(new MenuItem("", *gameFont));
+  creditsMenu.items.push_back(new MenuItem("", *gameFont));
   creditsMenu.items.push_back(new MenuButton("Back", *gameFont, []() { state = Start; }));
 
   previous = high_resolution_clock::now();
