@@ -1,8 +1,12 @@
 #include "menu.h"
 
 extern RenderWindow *window;
+extern int playerlives;
 
 void Menu::Update() {
+	if (playerlives != 3) {
+		playerlives = 3;
+	}
   for (size_t i = 0; i < items.size(); i++) {
     items[i]->Update(Vector2f(GAME_WORLD_X / 3, (i + 1) * (GAME_WORLD_Y / (items.size() + 2))));
   }

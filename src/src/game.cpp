@@ -13,6 +13,7 @@ Sprite *playerSprite;
 Sprite *backgroundSprite;
 
 Sprite *powersprite;
+Sprite *ExplosionSprite;
 
 Sound *fire;
 Sound *explosion;
@@ -72,6 +73,9 @@ void LoadGameContent() {
   playerSprite = new Sprite();
   playerSprite->setTexture(*textures[0]);
   playerSprite->setPosition(512, 256);
+
+  ExplosionSprite = new Sprite();
+  ExplosionSprite->setTexture(*textures[15]);
 
   powersprite = new Sprite();
   powersprite->setScale(2.0f, 2.0f);
@@ -301,6 +305,11 @@ void GameRender() {
 
   for (auto &e : enemies) {
     window->draw(*e->spr);
+	if (e->alive == false) {
+		ExplosionSprite->setPosition(e->spr->getPosition().x,e->spr->getPosition().y);
+			window->draw(*ExplosionSprite);
+			explosion->play();
+	}
   }
 
   if (PowerChance >= 30) {
