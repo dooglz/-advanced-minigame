@@ -174,11 +174,11 @@ void GameUpdate(float deltaSeconds) {
 			  powersprite->setPosition(enemies[i]->getPosition().x, enemies[i]->getPosition().y + 1);
 			  powersprite->setTexture(*textures[13]);
 		  }
-		  else if (PowerChance >= 60) {
+		  if (PowerChance >= 60) {
 			  powersprite->setPosition(enemies[i]->getPosition().x, enemies[i]->getPosition().y + 1);
 			  powersprite->setTexture(*textures[14]);
 		  }
-		  else if (PowerChance >= 90) {
+		  if (PowerChance >= 90) {
 			  powersprite->setPosition(enemies[i]->getPosition().x, enemies[i]->getPosition().y + 1);
 			  powersprite->setTexture(*textures[12]);
 		  }
@@ -224,10 +224,12 @@ void GameRender() {
   for (size_t i = 0; i < currentEnemies; i++) {
     window->draw(*enemies[i]);
   }
+
+  
   if (PowerChance >= 30) {
 	  window->draw(*powersprite);
   }
-
+  window->draw(*powersprite);
   window->draw(*scoreText);
 }
 
