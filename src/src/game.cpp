@@ -43,6 +43,7 @@ void LoadGameContent() {
   bulletsprite->setPosition(0, -128.0f);
 
   powersprite = new Sprite();
+  powersprite->setScale(2.0f, 2.0f);
 
   backgroundSprite = new Sprite();
   backgroundSprite->setTexture(*textures[11]);
@@ -177,30 +178,63 @@ void GameUpdate(float deltaSeconds) {
                               bulletsprite->getPosition().y - 1000.0f * deltaSeconds);
   }
 
+  int lifespan = 1000;
   for (size_t i = 0; i < enemies.size(); i++) {
     auto e = enemies[i];
     e->Update(deltaSeconds);
     if (!e->alive) {
       PowerChance = rand() % 101;
       if (PowerChance >= 30) {
-        powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
-        powersprite->setTexture(*textures[13]);
+		  while (lifespan >=0)
+		  {
+			  powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
+			  powersprite->setTexture(*textures[13]);
+			  lifespan--;
+			  break;
+		  }
+		
       }
       if (PowerChance >= 60) {
-        powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
-        powersprite->setTexture(*textures[14]);
+		  while (lifespan >= 0)
+		  {
+			  powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
+			  powersprite->setTexture(*textures[14]);
+			  lifespan--;
+			  break;
+		  }
+		
       }
       if (PowerChance >= 90) {
-        powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
-        powersprite->setTexture(*textures[12]);
+		  while (lifespan >= 0)
+		  {
+			  powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
+			  powersprite->setTexture(*textures[12]);
+			  lifespan--;
+			  break;
+		  }
       }
+	 
 
+	  lifespan = 1000;
       delete e;
       enemies[i] = nullptr;
       enemies.erase(enemies.begin() + i);
       --i;
     }
   }
+
+  if (playerSprite->getGlobalBounds().intersects(powersprite->getGlobalBounds())) {
+	  if (powersprite->getTexture() == textures[12]) {
+		  playerlives += 1;
+	  }
+	  else if (powersprite->getTexture() == textures[13]) {
+
+	  }
+	  else if (powersprite->getTexture() == textures[14]) {
+
+	  }
+  }
+
 
   if (playerlives == 0) {
     // state = Gamestates::Dead;
