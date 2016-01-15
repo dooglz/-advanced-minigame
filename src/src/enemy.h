@@ -14,12 +14,16 @@ struct ZigZag : public FlyBehavior {
   Vector2f move(Vector2f currentPos);
 };
 struct Standard : public FlyBehavior {
+  Standard();
+  float start;
   Vector2f move(Vector2f currentPos);
 };
 struct Line : public FlyBehavior {
   Vector2f move(Vector2f currentPos);
 };
 struct Homing : public FlyBehavior {
+  Homing();
+  float start;
   Vector2f move(Vector2f currentPos);
 };
 }

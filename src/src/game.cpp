@@ -3,12 +3,13 @@
 #include "enemy.h"
 #include "game.h"
 #include "particles.h"
+#include "weapon.h"
 #include <SFML/Graphics.hpp>
 #include <stack>
 
 Sprite *playerSprite;
 Sprite *backgroundSprite;
-Sprite *bulletsprite;
+
 Sprite *powersprite;
 Text *scoreText;
 Text *pausedText;
@@ -18,6 +19,8 @@ extern RenderWindow *window;
 extern Gamestates state;
 extern Font *gameFont;
 extern Texture *textures[TEX_COUNT];
+
+Weapon *playerWeapon;
 
 int playerlives = 3;
 stack<Sprite *> unusedSprites;
@@ -38,9 +41,6 @@ void LoadGameContent() {
   playerSprite = new Sprite();
   playerSprite->setTexture(*textures[0]);
   playerSprite->setPosition(512, 256);
-  bulletsprite = new Sprite();
-  bulletsprite->setTexture(*textures[10]);
-  bulletsprite->setPosition(0, -128.0f);
 
   powersprite = new Sprite();
 
@@ -57,6 +57,8 @@ void LoadGameContent() {
     unusedSprites.push(s);
   }
 
+  playerWeapon = new weps::Blaster();
+
   ps = new ParticleSystem(Vector2u(GAME_RESOULUTION));
   ps->setDissolutionRate(1);
   // prefuel
@@ -71,12 +73,6 @@ void UnLoadGameContent() {
   for (auto &e : enemies) {
     delete e;
     e = nullptr;
-  }
-}
-void FireBullet() {
-  if (bulletsprite->getPosition().y <= -128.0f) {
-    bulletsprite->setPosition(playerSprite->getPosition().x + 30,
-                              playerSprite->getPosition().y - 1);
   }
 }
 
@@ -119,7 +115,7 @@ void GameUpdate(float deltaSeconds) {
   }
 
   if (Keyboard::isKeyPressed(Keyboard::Space)) {
-    FireBullet();
+    playerWeapon->Fire();
   }
 
   Vector2f moveDirection(0, 0);
@@ -152,7 +148,7 @@ void GameUpdate(float deltaSeconds) {
       state = Gamestates::Pause;
     }
     if (Joystick::isButtonPressed(0, 0)) {
-      FireBullet();
+      playerWeapon->Fire();
     }
   }
   if (playerSprite->getPosition().x < 0) {
@@ -171,11 +167,6 @@ void GameUpdate(float deltaSeconds) {
   moveDirection = (moveDirection * playerMoveSpeed) * deltaSeconds;
 
   playerSprite->setPosition(playerSprite->getPosition() + moveDirection);
-
-  if (bulletsprite->getPosition().y > -128.0f) {
-    bulletsprite->setPosition(bulletsprite->getPosition().x,
-                              bulletsprite->getPosition().y - 1000.0f * deltaSeconds);
-  }
 
   for (size_t i = 0; i < enemies.size(); i++) {
     auto e = enemies[i];
@@ -212,7 +203,7 @@ void GameUpdate(float deltaSeconds) {
     pcount = 0;
     ps->fuel(1, Vector2f(0, 0), Vector2f(0, GAME_WORLD_X));
   }
-
+  playerWeapon->Update(deltaSeconds);
   ps->update(deltaSeconds);
   scoreText->setString("Score =" + to_string(score + ceil(runTime)) + "\n\n"
                                                                       "lives = " +
@@ -221,8 +212,8 @@ void GameUpdate(float deltaSeconds) {
 
 void GameRender() {
   window->draw(*ps);
+  playerWeapon->Render();
   window->draw(*playerSprite);
-  window->draw(*bulletsprite);
 
   for (auto &e : enemies) {
     window->draw(*e->spr);
