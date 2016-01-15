@@ -262,7 +262,9 @@ void GameUpdate(float deltaSeconds) {
     }
   }
 
-  powertime = 1000;
+  if (powertime == 0) {
+	  powertime = 1000;
+  }
    if (playerlives == 0) {
      state = Gamestates::Credits;
   }
