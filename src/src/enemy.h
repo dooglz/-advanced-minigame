@@ -4,23 +4,35 @@
 #include <SFML/Graphics.hpp>
 using namespace sf;
 
+struct FlyBehavior {
+  virtual Vector2f move(Vector2f currentPos) = 0;
+};
 
-typedef Vector2f (*FlyBehavior)(Vector2f currentPos);
 namespace FlyBehaviors {
-static Vector2f ZigZag(Vector2f currentPos);
-static Vector2f Standard(Vector2f currentPos);
-static Vector2f Line(Vector2f currentPos);
-static Vector2f Homing(Vector2f currentPos);
+struct ZigZag : public FlyBehavior {
+  bool dir = false;
+  Vector2f move(Vector2f currentPos);
+};
+struct Standard : public FlyBehavior {
+  Vector2f move(Vector2f currentPos);
+};
+struct Line : public FlyBehavior {
+  Vector2f move(Vector2f currentPos);
+};
+struct Homing : public FlyBehavior {
+  Vector2f move(Vector2f currentPos);
+};
 }
 
 struct EnemyShip {
   bool alive;
+  float speed;
   float health;
   float damageOnCollide;
-  FlyBehavior flyB;
-  Sprite* spr;
+  FlyBehavior *flyB;
+  Sprite *spr;
   virtual void Update(float deltaSeconds);
-  EnemyShip(float h, float d, FlyBehavior f, Texture* t);
+  EnemyShip(float h, float d, float s, FlyBehavior *f, Texture *t);
   ~EnemyShip();
 };
 
