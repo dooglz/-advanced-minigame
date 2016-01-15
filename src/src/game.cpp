@@ -4,6 +4,7 @@
 #include "game.h"
 #include "particles.h"
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <stack>
 #include <iostream>
 
@@ -11,6 +12,14 @@ Sprite *playerSprite;
 Sprite *backgroundSprite;
 Sprite *bulletsprite;
 Sprite *powersprite;
+
+Sound *fire;
+Sound *explosion;
+Sound * laser;
+SoundBuffer *fireBuffer;
+SoundBuffer *explosionBuffer;
+SoundBuffer *laserBuffer;
+
 Text *scoreText;
 Text *pausedText;
 ParticleSystem *ps;
@@ -35,6 +44,22 @@ void LoadGameContent() {
   scoreText->setPosition(0, 0);
   scoreText->setCharacterSize(24);
   scoreText->setColor(Color::Red);
+
+  fire = new Sound();
+  explosion = new Sound();
+  laser = new Sound();
+
+  fireBuffer = new SoundBuffer();
+  explosionBuffer = new SoundBuffer();
+  laserBuffer = new SoundBuffer();
+
+  fireBuffer->loadFromFile("../res/Sounds/Missile.wav");
+  explosionBuffer->loadFromFile("../res/Sounds/Explosion.wav");
+  laserBuffer->loadFromFile("../res/Sounds/laser.wav");
+
+  fire->setBuffer(*fireBuffer);
+  explosion->setBuffer(*explosionBuffer);
+  laser->setBuffer(*laserBuffer);
 
   playerSprite = new Sprite();
   playerSprite->setTexture(*textures[0]);
@@ -122,6 +147,7 @@ void GameUpdate(float deltaSeconds) {
 
   if (Keyboard::isKeyPressed(Keyboard::Space)) {
     FireBullet();
+	fire->play();
   }
 
   Vector2f moveDirection(0, 0);
@@ -155,6 +181,7 @@ void GameUpdate(float deltaSeconds) {
     }
     if (Joystick::isButtonPressed(0, 0)) {
       FireBullet();
+	  fire->play();
     }
   }
   if (playerSprite->getPosition().x < 0) {
