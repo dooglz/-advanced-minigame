@@ -5,6 +5,7 @@
 #include "particles.h"
 #include <SFML/Graphics.hpp>
 #include <stack>
+#include <iostream>
 
 Sprite *playerSprite;
 Sprite *backgroundSprite;
@@ -226,12 +227,15 @@ void GameUpdate(float deltaSeconds) {
   if (playerSprite->getGlobalBounds().intersects(powersprite->getGlobalBounds())) {
 	  if (powersprite->getTexture() == textures[12]) {
 		  playerlives += 1;
+		  powersprite->setPosition(670, -128);
 	  }
 	  else if (powersprite->getTexture() == textures[13]) {
-
+		  cout << "shield picked up";
+		  powersprite->setPosition(670, -128);
 	  }
 	  else if (powersprite->getTexture() == textures[14]) {
-
+		  cout << "missile picked up";
+		  powersprite->setPosition(670, -128);
 	  }
   }
 
