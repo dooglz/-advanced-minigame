@@ -74,3 +74,5 @@ bin/*
 sce_module/
 src/build/
 src/bin/
+*.msi
+*.exe

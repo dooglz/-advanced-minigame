@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "advanced-minigame", "src\advanced-minigame.vcxproj", "{BE3C805E-1F16-413B-ACA4-34552D1ED58A}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Astral_Insanity_Setup_x86", "installer\Astral_Insanity_Setup\Astral_Insanity_Setup.vdproj", "{DC15EBE5-4048-4140-A88A-64F3CC753BCF}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Astral_Insanity_Setup_x64", "..\installer\Astral_Insanity_Setup_x64\Astral_Insanity_Setup_x64.vdproj", "{E0E241AE-8A34-4E44-81F4-B1A2A2B21436}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{BE3C805E-1F16-413B-ACA4-34552D1ED58A}.Release|x64.Build.0 = Release|x64
 		{BE3C805E-1F16-413B-ACA4-34552D1ED58A}.Release|x86.ActiveCfg = Release|Win32
 		{BE3C805E-1F16-413B-ACA4-34552D1ED58A}.Release|x86.Build.0 = Release|Win32
+		{DC15EBE5-4048-4140-A88A-64F3CC753BCF}.Debug|x64.ActiveCfg = Debug
+		{DC15EBE5-4048-4140-A88A-64F3CC753BCF}.Debug|x86.ActiveCfg = Debug
+		{DC15EBE5-4048-4140-A88A-64F3CC753BCF}.Release|x64.ActiveCfg = Release
+		{DC15EBE5-4048-4140-A88A-64F3CC753BCF}.Release|x86.ActiveCfg = Release
+		{E0E241AE-8A34-4E44-81F4-B1A2A2B21436}.Debug|x64.ActiveCfg = Debug
+		{E0E241AE-8A34-4E44-81F4-B1A2A2B21436}.Debug|x86.ActiveCfg = Debug
+		{E0E241AE-8A34-4E44-81F4-B1A2A2B21436}.Release|x64.ActiveCfg = Release
+		{E0E241AE-8A34-4E44-81F4-B1A2A2B21436}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
