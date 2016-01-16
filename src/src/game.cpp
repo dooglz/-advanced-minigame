@@ -12,8 +12,8 @@
 Sprite *playerSprite;
 Sprite *backgroundSprite;
 
-Sprite *powersprite;
-Sprite *ExplosionSprite;
+Sprite powersprite;
+Sprite ExplosionSprite;
 
 void fadeBGM(SoundBuffer *b);
 extern SoundBuffer *bgmbuffers[SFX_COUNT];
@@ -22,7 +22,7 @@ Text *scoreText;
 Text *pausedText;
 ParticleSystem *ps;
 bool shielded;
-sf::CircleShape *shield;
+CircleShape shield;
 int powertime = 1000;
 
 extern RenderWindow *window;
@@ -33,8 +33,10 @@ extern Texture *textures[TEX_COUNT];
 Weapon *playerWeapon;
 
 int playerlives = 3;
+
 stack<Sprite *> unusedSprites;
 vector<EnemyShip *> enemies;
+
 int PowerChance = 0;
 static unsigned int currentEnemies = 0;
 float playerMoveSpeed = 600.0f;
@@ -42,6 +44,23 @@ unsigned score = 0;
 float runTime = 0; // time in seconds that the game has been running
 void UpdateExplosions(float dt);
 void Explode(Vector2f pos);
+
+void ResetGame() {
+  PowerChance = 0;
+  playerMoveSpeed = 600.0f;
+  score = 0;
+  runTime = 0;
+  currentEnemies = 0;
+  playerSprite->setPosition(512, 256);
+  for (auto e : enemies) {
+    delete e;
+  }
+  enemies.clear();
+  fadeBGM(bgmbuffers[MAINBGM]);
+
+  playerSprite->setPosition(512, 256);
+}
+
 void LoadGameContent() {
   scoreText = new Text();
   scoreText->setFont(*gameFont);
@@ -49,16 +68,11 @@ void LoadGameContent() {
   scoreText->setCharacterSize(24);
   scoreText->setColor(Color::Red);
 
-  shield = new CircleShape(20, 120);
   playerSprite = new Sprite();
   playerSprite->setTexture(*textures[0]);
   playerSprite->setPosition(512, 256);
 
-  ExplosionSprite = new Sprite();
-  ExplosionSprite->setTexture(*textures[15]);
-
-  powersprite = new Sprite();
-  powersprite->setScale(2.0f, 2.0f);
+  powersprite.setScale(2.0f, 2.0f);
 
   backgroundSprite = new Sprite();
   backgroundSprite->setTexture(*textures[11]);
@@ -81,15 +95,21 @@ void LoadGameContent() {
   ps->fuel(250, Vector2f(0, GAME_WORLD_Y), Vector2f(0, GAME_WORLD_X));
 }
 void UnLoadGameContent() {
-  scoreText = new Text();
-  scoreText->setFont(*gameFont);
-  scoreText->setPosition(0, 0);
-  scoreText->setCharacterSize(24);
-  scoreText->setColor(Color::Red);
+  delete scoreText;
+  scoreText = nullptr;
+  delete playerSprite;
+  playerSprite = nullptr;
+  delete backgroundSprite;
+  backgroundSprite = nullptr;
+
   for (auto &e : enemies) {
     delete e;
     e = nullptr;
   }
+  delete ps;
+  ps = nullptr;
+  delete playerWeapon;
+  playerWeapon = nullptr;
 }
 
 void GameHandleEvent(Event &e) {
@@ -195,14 +215,14 @@ void GameUpdate(float deltaSeconds) {
 
   int lifespan = 1000;
 
-  if (playerSprite->getGlobalBounds().intersects(powersprite->getGlobalBounds())) {
-    if (powersprite->getTexture() == textures[12]) {
+  if (playerSprite->getGlobalBounds().intersects(powersprite.getGlobalBounds())) {
+    if (powersprite.getTexture() == textures[12]) {
       playerlives += 1;
-      powersprite->setPosition(670, -128);
-    } else if (powersprite->getTexture() == textures[13]) {
+      powersprite.setPosition(670, -128);
+    } else if (powersprite.getTexture() == textures[13]) {
       shielded = true;
-      powersprite->setPosition(670, -128);
-    } else if (powersprite->getTexture() == textures[14]) {
+      powersprite.setPosition(670, -128);
+    } else if (powersprite.getTexture() == textures[14]) {
 
       while (powertime >= 0) {
         playerWeapon->reloadTime = 0;
@@ -210,7 +230,7 @@ void GameUpdate(float deltaSeconds) {
         break;
       }
 
-      powersprite->setPosition(670, -128);
+      powersprite.setPosition(670, -128);
     }
   }
 
@@ -221,24 +241,24 @@ void GameUpdate(float deltaSeconds) {
       PowerChance = rand() % 101;
       if (PowerChance >= 30) {
         while (lifespan >= 0) {
-          powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
-          powersprite->setTexture(*textures[13]);
+          powersprite.setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
+          powersprite.setTexture(*textures[13]);
           lifespan--;
           break;
         }
       }
       if (PowerChance >= 60) {
         while (lifespan >= 0) {
-          powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
-          powersprite->setTexture(*textures[14]);
+          powersprite.setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
+          powersprite.setTexture(*textures[14]);
           lifespan--;
           break;
         }
       }
       if (PowerChance >= 90) {
         while (lifespan >= 0) {
-          powersprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
-          powersprite->setTexture(*textures[12]);
+          powersprite.setPosition(e->spr->getPosition().x, e->spr->getPosition().y + 1);
+          powersprite.setTexture(*textures[12]);
           lifespan--;
           break;
         }
@@ -280,10 +300,10 @@ void GameRender() {
   playerWeapon->Render();
 
   if (shielded == true) {
-    shield->setPosition(playerSprite->getPosition().x + 12, playerSprite->getPosition().y + 10);
-    shield->setFillColor(Color::Transparent);
-    shield->setOutlineThickness(5);
-    shield->setOutlineColor(Color::Blue);
+    shield.setPosition(playerSprite->getPosition().x + 12, playerSprite->getPosition().y + 10);
+    shield.setFillColor(Color::Transparent);
+    shield.setOutlineThickness(5);
+    shield.setOutlineColor(Color::Blue);
   }
   window->draw(*playerSprite);
 
@@ -295,22 +315,10 @@ void GameRender() {
   }
 
   if (PowerChance >= 30) {
-    window->draw(*powersprite);
+    window->draw(powersprite);
   }
-  window->draw(*powersprite);
+  window->draw(powersprite);
   window->draw(*scoreText);
-}
-
-void ResetGame() {
-  score = 0;
-  runTime = 0;
-  currentEnemies = 0;
-  playerSprite->setPosition(512, 256);
-  for (auto e : enemies) {
-    delete e;
-  }
-  enemies.clear();
-  fadeBGM(bgmbuffers[MAINBGM]);
 }
 
 void Explode(Vector2f pos) {
