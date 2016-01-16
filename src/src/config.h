@@ -57,6 +57,14 @@ enum SOUND { MISSILE, EXPLOSION, LASER, SOUND_COUNT };
 static const string soundNames[SOUND_COUNT]{"sounds/missile.wav", "sounds/explosion.wav",
                                             "sounds/laser.wav"};
 
+
+enum MUSIC { AMBIENTBGM, MAINBGM, MAINBGM2, BOSSBGM, MUSIC_COUNT };
+
+static const string musicNames[]{
+  "music/orbitals.ogg", "music/robotix.ogg", "music/starflake.ogg", "music/synth5.ogg"
+};
+
+
 #ifdef _DEBUG
 #if defined(_WIN32) || defined(_WIN64)
 #define BREAKPOINT __debugbreak();

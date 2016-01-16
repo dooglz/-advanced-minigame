@@ -22,6 +22,9 @@ SoundBuffer *fireBuffer;
 SoundBuffer *explosionBuffer;
 SoundBuffer *laserBuffer;
 
+void fadeBGM(SoundBuffer * b);
+extern SoundBuffer* soundbuffers[SOUND_COUNT];
+
 Text *scoreText;
 Text *pausedText;
 ParticleSystem *ps;
@@ -330,4 +333,5 @@ void ResetGame() {
     delete e;
   }
   enemies.clear();
+  fadeBGM(soundbuffers[MAINBGM]);
 }

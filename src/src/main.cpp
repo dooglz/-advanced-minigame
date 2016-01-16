@@ -3,6 +3,7 @@
 #include "menu.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Audio.hpp>
 #include <chrono>
 #include <iostream>
 #include <thread>
@@ -17,7 +18,9 @@ Vector2f scaledGameOffsetNormal;
 RenderWindow *window;
 View gameView;
 Gamestates state = Gamestates::Start;
-
+SoundBuffer *soundbuffers[SOUND_COUNT];
+Sound *bgm1;
+Sound *bgm2;
 Texture *textures[TEX_COUNT];
 Font *gameFont;
 Text pausedText;
@@ -25,7 +28,8 @@ Menu mainMenu;
 Menu creditsMenu;
 Menu controlsMenu;
 static high_resolution_clock::time_point previous;
-
+void fadeBGM(SoundBuffer *b);
+void UpdateBGM(float deltatime);
 void Resize() {
   const Vector2f win = (Vector2f)window->getSize();
   float scale = 1.0f;
@@ -64,13 +68,18 @@ void Loadcontent() {
   pausedText.setCharacterSize(64);
   pausedText.setColor(Color::White);
   pausedText.setString("PAUSED");
-  for (size_t i = 0; i < 16; i++) {
+  for (size_t i = 0; i < TEX_COUNT; i++) {
     textures[i] = new Texture();
     if (!textures[i]->loadFromFile(filepath + textureNames[i])) {
       throw invalid_argument("Loading error!");
     }
   }
-
+  for (size_t i = 0; i < MUSIC_COUNT; i++) {
+    soundbuffers[i] = new SoundBuffer();
+    soundbuffers[i]->loadFromFile(filepath + musicNames[i]);
+  }
+  bgm1 = new Sound();
+  bgm2 = new Sound();
   LoadGameContent();
 }
 
@@ -80,7 +89,17 @@ void Unload() {
     delete t;
     t = nullptr;
   }
+
+  delete bgm1;
+  delete bgm2;
+  bgm1 = nullptr;
+  bgm2 = nullptr;
+  for (auto &t : soundbuffers) {
+    delete t;
+    t = nullptr;
+  }
   delete gameFont;
+
   gameFont = nullptr;
 }
 
@@ -149,6 +168,8 @@ void Update() {
   default:
     break;
   }
+
+  UpdateBGM(deltaSeconds);
 }
 
 void Render() {
@@ -231,6 +252,7 @@ int main() {
   creditsMenu.items.push_back(new MenuItem("", *gameFont));
   creditsMenu.items.push_back(new MenuButton("Back", *gameFont, []() { state = Start; }));
 
+  fadeBGM(soundbuffers[AMBIENTBGM]);
   previous = high_resolution_clock::now();
 
   while (window->isOpen()) {
@@ -242,4 +264,49 @@ int main() {
   delete window;
   window = nullptr;
   return 0;
+}
+
+static bool currentsound = false;
+static bool isfading = false;
+void fadeBGM(SoundBuffer *b) {
+  if (isfading) {
+    currentsound = !currentsound;
+  }
+  if (currentsound) {
+    bgm2->setBuffer(*b);
+    bgm2->setVolume(0);
+    bgm2->play();
+  } else {
+    bgm1->setVolume(0);
+    bgm1->setBuffer(*b);
+    bgm1->play();
+  }
+  isfading = true;
+}
+
+void UpdateBGM(float deltatime) {
+  static float d = 0.0f;
+  if (isfading) {
+    d += deltatime;
+    int v = min((int)ceil(d * 20.0f), 100);
+    if (currentsound) {
+      if (bgm2->getVolume() == 100) {
+        isfading = false;
+        currentsound = false;
+        bgm1->stop();
+        d = 0.0f;
+      }
+      bgm2->setVolume(v);
+      bgm1->setVolume(100 - v);
+    } else {
+      if (bgm1->getVolume() == 100) {
+        isfading = false;
+        currentsound = true;
+        bgm2->stop();
+        d = 0.0f;
+      }
+      bgm1->setVolume(v);
+      bgm2->setVolume(100 - v);
+    }
+  }
 }
