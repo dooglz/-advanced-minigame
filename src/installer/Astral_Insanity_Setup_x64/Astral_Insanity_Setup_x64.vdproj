@@ -15,13 +15,13 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_3F355A57901E4409B53C0197EB7382F2"
+        "MsmKey" = "8:_6F3A247669D846209108A2D81C8959FA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_6F3A247669D846209108A2D81C8959FA"
+        "MsmKey" = "8:_9183FFA432904A72A3C06186F25E795C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -306,7 +306,7 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_89CCAAF9AB684D728565C2944A285EFD"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_0ECC30AF32F64901B644039547B48D10"
             {
             "Name" = "8:Astral Insanity x64"
             "Arguments" = "8:"
@@ -314,21 +314,7 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_3F355A57901E4409B53C0197EB7382F2"
-            "Folder" = "8:_8321DCC70B6046FB839BF7E23DCF300C"
-            "WorkingFolder" = "8:_5352139AEC374661A0CE7270E9B9B74F"
-            "Icon" = "8:"
-            "Feature" = "8:"
-            }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_FE3C58339B1E4F879CF757A1AFD00C3D"
-            {
-            "Name" = "8:Astral Insanity x64"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_3F355A57901E4409B53C0197EB7382F2"
+            "Target" = "8:_9183FFA432904A72A3C06186F25E795C"
             "Folder" = "8:_48C8023B2C9B4443B9688E04EA349924"
             "WorkingFolder" = "8:_5352139AEC374661A0CE7270E9B9B74F"
             "Icon" = "8:"
@@ -761,7 +747,7 @@
                 {
                 }
             }
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3F355A57901E4409B53C0197EB7382F2"
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9183FFA432904A72A3C06186F25E795C"
             {
             "SourcePath" = "8:..\\..\\bin\\x64_Release\\advanced-minigame.exe"
             "TargetName" = "8:"

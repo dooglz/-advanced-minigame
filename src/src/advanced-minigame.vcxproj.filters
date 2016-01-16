@@ -67,18 +67,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Media Include="..\res\music\orbitals.mp3">
-      <Filter>Source Files\Resource Files\music</Filter>
-    </Media>
-    <Media Include="..\res\music\robotix.mp3">
-      <Filter>Source Files\Resource Files\music</Filter>
-    </Media>
-    <Media Include="..\res\music\starflake.mp3">
-      <Filter>Source Files\Resource Files\music</Filter>
-    </Media>
-    <Media Include="..\res\music\synth5.mp3">
-      <Filter>Source Files\Resource Files\music</Filter>
-    </Media>
     <Media Include="..\res\sounds\explosion.wav">
       <Filter>Source Files\Resource Files\sounds</Filter>
     </Media>
@@ -86,6 +74,9 @@
       <Filter>Source Files\Resource Files\sounds</Filter>
     </Media>
     <Media Include="..\res\sounds\missile.wav">
+      <Filter>Source Files\Resource Files\sounds</Filter>
+    </Media>
+    <Media Include="..\res\sounds\shoot.wav">
       <Filter>Source Files\Resource Files\sounds</Filter>
     </Media>
   </ItemGroup>
@@ -143,5 +134,19 @@
     <Font Include="..\res\fonts\americancaptain.ttf">
       <Filter>Source Files\Resource Files\fonts</Filter>
     </Font>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\res\music\orbitals.ogg">
+      <Filter>Source Files\Resource Files\music</Filter>
+    </None>
+    <None Include="..\res\music\robotix.ogg">
+      <Filter>Source Files\Resource Files\music</Filter>
+    </None>
+    <None Include="..\res\music\starflake.ogg">
+      <Filter>Source Files\Resource Files\music</Filter>
+    </None>
+    <None Include="..\res\music\synth5.ogg">
+      <Filter>Source Files\Resource Files\music</Filter>
+    </None>
   </ItemGroup>
 </Project>
