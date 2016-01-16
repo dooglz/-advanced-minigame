@@ -21,7 +21,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_6FCE13892E2D47C79027753B5E9BE9C3"
+        "MsmKey" = "8:_6F3A247669D846209108A2D81C8959FA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -43,6 +43,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -101,9 +109,9 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6FCE13892E2D47C79027753B5E9BE9C3"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6F3A247669D846209108A2D81C8959FA"
             {
-            "SourcePath" = "8:..\\..\\src\\redist\\x64\\openal32.dll"
+            "SourcePath" = "8:..\\..\\redist\\x64\\openal32.dll"
             "TargetName" = "8:openal32.dll"
             "Tag" = "8:"
             "Folder" = "8:_5352139AEC374661A0CE7270E9B9B74F"
@@ -182,7 +190,7 @@
         "UpgradeCode" = "8:{2FB3608C-7B2F-4BCD-AE6D-8704C0B968D4}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
-        "RemovePreviousVersions" = "11:FALSE"
+        "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
         "ProductVersion" = "8:1.0.0"
@@ -727,7 +735,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3F355A57901E4409B53C0197EB7382F2"
             {
-            "SourcePath" = "8:..\\..\\src\\bin\\x64_Release\\advanced-minigame.exe"
+            "SourcePath" = "8:"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_5352139AEC374661A0CE7270E9B9B74F"
