@@ -25,7 +25,7 @@ SoundBuffer *laserBuffer;
 Text *scoreText;
 Text *pausedText;
 ParticleSystem *ps;
-bool shielded = false;
+bool shielded;
 sf::CircleShape *shield;
 int powertime = 1000;
 
@@ -66,10 +66,12 @@ void LoadGameContent() {
   explosionBuffer->loadFromFile(filepath + soundNames[EXPLOSION]);
   laserBuffer->loadFromFile(filepath + soundNames[LASER]);
 
+ 
   fire->setBuffer(*fireBuffer);
   explosion->setBuffer(*explosionBuffer);
   laser->setBuffer(*laserBuffer);
-
+ 
+  fire->setMinDistance(0.3f);
   playerSprite = new Sprite();
   playerSprite->setTexture(*textures[0]);
   playerSprite->setPosition(512, 256);
@@ -209,6 +211,29 @@ void GameUpdate(float deltaSeconds) {
 
   int lifespan = 1000;
 
+
+  if (playerSprite->getGlobalBounds().intersects(powersprite->getGlobalBounds())) {
+	  if (powersprite->getTexture() == textures[12]) {
+		  playerlives += 1;
+		  powersprite->setPosition(670, -128);
+	  }
+	  else if (powersprite->getTexture() == textures[13]) {
+		  shielded = true;
+		  powersprite->setPosition(670, -128);
+	  }
+	  else if (powersprite->getTexture() == textures[14]) {
+
+		  while (powertime >= 0) {
+			  playerWeapon->reloadTime = 0;
+			  powertime--;
+			  break;
+		  }
+
+		  powersprite->setPosition(670, -128);
+	  }
+  }
+
+
   for (size_t i = 0; i < enemies.size(); i++) {
     auto e = enemies[i];
     e->Update(deltaSeconds);
@@ -247,24 +272,7 @@ void GameUpdate(float deltaSeconds) {
     }
   }
 
-  if (playerSprite->getGlobalBounds().intersects(powersprite->getGlobalBounds())) {
-    if (powersprite->getTexture() == textures[12]) {
-      playerlives += 1;
-      powersprite->setPosition(670, -128);
-    } else if (powersprite->getTexture() == textures[13]) {
-		shielded = true;
-      powersprite->setPosition(670, -128);
-    } else if (powersprite->getTexture() == textures[14]) {
-     
-		while (powertime >= 0) {
-			playerWeapon->reloadTime =0;
-			powertime--;
-			break;
-		}
-		
-      powersprite->setPosition(670, -128);
-    }
-  }
+
 
   if (powertime == 0) {
 	  powertime = 1000;
@@ -290,14 +298,11 @@ void GameRender() {
   window->draw(*ps);
   playerWeapon->Render();
   
-  if (shielded == true) {
-	  
+  if (shielded == true) {	  
 	  shield->setPosition(playerSprite->getPosition().x + 12,playerSprite->getPosition().y+10);
 	  shield->setFillColor(Color::Transparent);
 	  shield->setOutlineThickness(5);
 	  shield->setOutlineColor(Color::Blue);
-
-	  window->draw(*shield);
   }
   window->draw(*playerSprite);
 
