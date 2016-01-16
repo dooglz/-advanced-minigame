@@ -62,8 +62,8 @@ void EnemyShip::Update(float deltaSeconds) {
       shielded = false;
     }
   }
-  //tint red by damage
-  const int hp = max(0,min((int)(255.0f*(health / maxhealth)),255));
+  // tint red by damage
+  const int hp = max(0, min((int)(255.0f * (health / maxhealth)), 255));
   spr->setColor(Color(255, hp, hp));
 }
 

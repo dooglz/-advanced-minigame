@@ -104,18 +104,6 @@ void Update() {
                                      scaledGameResolutionNormal.x, scaledGameResolutionNormal.y));
       window->setView(gameView);
       break;
-    case Event::KeyPressed:
-      switch (e.key.code) {
-      case Keyboard::Escape:
-        state = Start;
-        return;
-        break;
-      case Keyboard::B:
-        BREAKPOINT
-        break;
-      default:
-        break;
-      }
     default:
       break;
     }
@@ -125,7 +113,7 @@ void Update() {
       GameHandleEvent(e);
       break;
     case Start:
-       mainMenu.MenuHadleEvent(e);
+      mainMenu.MenuHadleEvent(e);
       break;
     case Controls:
       controlsMenu.MenuHadleEvent(e);
@@ -134,7 +122,8 @@ void Update() {
       creditsMenu.MenuHadleEvent(e);
       break;
     case Pause:
-      if (e.type == Event::KeyPressed && e.key.code == Keyboard::P) {
+      if (e.type == Event::KeyPressed && e.key.code == Keyboard::P ||
+          e.type == Event::JoystickButtonPressed && e.joystickButton.button == 2) {
         state = Game;
         return;
       }

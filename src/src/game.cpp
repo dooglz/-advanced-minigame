@@ -115,7 +115,17 @@ void UnLoadGameContent() {
 void GameHandleEvent(Event &e) {
   if (e.type == Event::KeyPressed) {
     if (e.key.code == Keyboard::P) {
-      state = Gamestates::Pause;
+      state = Pause;
+    } else if (e.key.code == Keyboard::Escape) {
+      state = Start;
+    }
+  }
+  if (e.type == Event::JoystickButtonPressed) {
+    if (e.joystickButton.button == 7) {
+      state = Start;
+    }
+    if (e.joystickButton.button == 2 && state == Game) {
+      state = Pause;
     }
   }
 }
@@ -182,9 +192,6 @@ void GameUpdate(float deltaSeconds) {
       moveDirection += Vector2f(0, (float)((signbit(joystickY) * -2) + 1));
     }
 
-    if (Joystick::isButtonPressed(0, 2) && state == Gamestates::Game) {
-      state = Gamestates::Pause;
-    }
     if (Joystick::isButtonPressed(0, 0)) {
       playerWeapon->Fire();
       fire->play();

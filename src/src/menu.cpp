@@ -20,10 +20,13 @@ void Menu::Render() {
 
 void Menu::MenuHadleEvent(Event &e) {
   int dir = 0;
-  if (e.type == Event::KeyPressed && e.key.code != Keyboard::Space) {
-    if (e.key.code == Keyboard::W || e.key.code == Keyboard::Up) {
+  if (e.type == Event::KeyPressed && e.key.code != Keyboard::Space ||
+      e.type == Event::JoystickMoved && e.joystickMove.axis == 7) {
+    if (e.key.code == Keyboard::W || e.key.code == Keyboard::Up ||
+        e.joystickMove.position > 50.0f) {
       dir = -1;
-    } else if (e.key.code == Keyboard::S || e.key.code == Keyboard::Down) {
+    } else if (e.key.code == Keyboard::S || e.key.code == Keyboard::Down ||
+               e.joystickMove.position < -50.0f) {
       dir = 1;
     }
 
