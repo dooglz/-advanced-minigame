@@ -32,6 +32,7 @@ struct EnemyShip {
   bool alive;
   float speed;
   float health;
+  float maxhealth;
   float damageOnCollide;
   FlyBehavior *flyB;
   Sprite *spr;

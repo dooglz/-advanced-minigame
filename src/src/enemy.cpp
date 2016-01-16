@@ -50,7 +50,9 @@ Vector2f FlyBehaviors::Homing::move(Vector2f currentPos) {
 
 void EnemyShip::Update(float deltaSeconds) {
   spr->setPosition(spr->getPosition() + flyB->move(spr->getPosition()) * deltaSeconds * 50.0f);
-  if (spr->getPosition().y > GAME_WORLD_Y) {
+  if (health <= 0.0f) {
+    alive = false;
+  } else if (spr->getPosition().y > GAME_WORLD_Y) {
     alive = false;
   } else if (spr->getGlobalBounds().intersects(playerSprite->getGlobalBounds())) {
     alive = false;
@@ -60,6 +62,9 @@ void EnemyShip::Update(float deltaSeconds) {
       shielded = false;
     }
   }
+  //tint red by damage
+  const int hp = max(0,min((int)(255.0f*(health / maxhealth)),255));
+  spr->setColor(Color(255, hp, hp));
 }
 
 EnemyShip::EnemyShip(float h, float d, float s, FlyBehavior *f, Texture *t) {
@@ -67,6 +72,7 @@ EnemyShip::EnemyShip(float h, float d, float s, FlyBehavior *f, Texture *t) {
   speed = s;
   damageOnCollide = d;
   health = h;
+  maxhealth = h;
   spr = unusedSprites.top();
   unusedSprites.pop();
   spr->setTexture(*t);

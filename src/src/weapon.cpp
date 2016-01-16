@@ -56,9 +56,8 @@ void weps::Blaster::Update(float deltaSeconds) {
       b->setPosition(b->getPosition().x, b->getPosition().y - 1000.0f * deltaSeconds);
       for (auto &e : enemies) {
         if (e->spr->getGlobalBounds().intersects(b->getGlobalBounds())) {
-          e->alive = false;
+          e->health -= damage;
           b->setPosition(0, -128.0f);
-          score += 100;
         }
       }
     } else {
