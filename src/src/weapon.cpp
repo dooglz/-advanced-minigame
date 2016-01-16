@@ -3,6 +3,7 @@
 #include "weapon.h"
 #include <SFML/Graphics.hpp>
 
+
 using namespace chrono;
 using namespace sf;
 extern Texture *textures[TEX_COUNT];
@@ -10,6 +11,7 @@ extern RenderWindow *window;
 extern Sprite *playerSprite;
 extern vector<EnemyShip *> enemies;
 extern unsigned score;
+extern SoundBuffer *sfxbuffers[SFX_COUNT];
 
 bool Weapon::CanFire() { return CanFire(cooldown_, reloadTime); }
 
@@ -42,6 +44,7 @@ weps::Blaster::Blaster() : Weapon::Weapon(10, 800, 0) {
   for (auto &c : cooldowns) {
     c = high_resolution_clock::now();
   }
+  snd.setBuffer(*sfxbuffers[SHOOT]);
 }
 weps::Blaster::~Blaster() {
   for (auto &b : bulletsprites) {
@@ -78,6 +81,7 @@ void weps::Blaster::Fire() {
       bulletsprites[i]->setPosition(playerSprite->getPosition().x + 25,
                                     playerSprite->getPosition().y);
       cooldowns[i] = high_resolution_clock::now();
+      snd.play();
     }
   }
 }

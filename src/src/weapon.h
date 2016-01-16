@@ -1,11 +1,13 @@
 #pragma once
 #include "config.h"
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <chrono>
 
 using namespace sf;
 
 struct Weapon {
+  Sound snd;
   float damage;
   unsigned int reloadTime;
   float cost;

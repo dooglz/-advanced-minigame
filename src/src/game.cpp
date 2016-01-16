@@ -15,15 +15,8 @@ Sprite *backgroundSprite;
 Sprite *powersprite;
 Sprite *ExplosionSprite;
 
-Sound *fire;
-Sound *explosion;
-Sound *laser;
-SoundBuffer *fireBuffer;
-SoundBuffer *explosionBuffer;
-SoundBuffer *laserBuffer;
-
-void fadeBGM(SoundBuffer * b);
-extern SoundBuffer* soundbuffers[SOUND_COUNT];
+void fadeBGM(SoundBuffer *b);
+extern SoundBuffer *bgmbuffers[SFX_COUNT];
 
 Text *scoreText;
 Text *pausedText;
@@ -47,7 +40,8 @@ static unsigned int currentEnemies = 0;
 float playerMoveSpeed = 600.0f;
 unsigned score = 0;
 float runTime = 0; // time in seconds that the game has been running
-
+void UpdateExplosions(float dt);
+void Explode(Vector2f pos);
 void LoadGameContent() {
   scoreText = new Text();
   scoreText->setFont(*gameFont);
@@ -55,24 +49,7 @@ void LoadGameContent() {
   scoreText->setCharacterSize(24);
   scoreText->setColor(Color::Red);
 
-  fire = new Sound();
-  explosion = new Sound();
-  laser = new Sound();
   shield = new CircleShape(20, 120);
-
-  fireBuffer = new SoundBuffer();
-  explosionBuffer = new SoundBuffer();
-  laserBuffer = new SoundBuffer();
-
-  fireBuffer->loadFromFile(filepath + soundNames[MISSILE]);
-  explosionBuffer->loadFromFile(filepath + soundNames[EXPLOSION]);
-  laserBuffer->loadFromFile(filepath + soundNames[LASER]);
-
-  fire->setBuffer(*fireBuffer);
-  explosion->setBuffer(*explosionBuffer);
-  laser->setBuffer(*laserBuffer);
-
-  fire->setMinDistance(0.3f);
   playerSprite = new Sprite();
   playerSprite->setTexture(*textures[0]);
   playerSprite->setPosition(512, 256);
@@ -143,6 +120,7 @@ void Normalize(Vector2f &v) {
 }
 
 void GameUpdate(float deltaSeconds) {
+  UpdateExplosions(deltaSeconds);
   runTime += deltaSeconds;
   currentEnemies = min((int)ceil(runTime * 0.6f) + 1, MAX_ENEMIES);
 
@@ -166,7 +144,6 @@ void GameUpdate(float deltaSeconds) {
   if (Keyboard::isKeyPressed(Keyboard::Space)) {
 
     playerWeapon->Fire();
-    fire->play();
   }
 
   Vector2f moveDirection(0, 0);
@@ -197,7 +174,6 @@ void GameUpdate(float deltaSeconds) {
 
     if (Joystick::isButtonPressed(0, 0)) {
       playerWeapon->Fire();
-      fire->play();
     }
   }
   if (playerSprite->getPosition().x < 0) {
@@ -269,6 +245,8 @@ void GameUpdate(float deltaSeconds) {
       }
 
       lifespan = 1000;
+      Explode(Vector2f(e->spr->getPosition().x + e->spr->getLocalBounds().width / 2,
+                       e->spr->getPosition().y + e->spr->getLocalBounds().height / 2));
       delete e;
       enemies[i] = nullptr;
       enemies.erase(enemies.begin() + i);
@@ -281,13 +259,13 @@ void GameUpdate(float deltaSeconds) {
   }
   if (playerlives == 0) {
     state = Gamestates::Credits;
+    fadeBGM(bgmbuffers[AMBIENTBGM]);
   }
   static int pcount = 0;
   ++pcount;
   if (pcount % 5 == 0) {
     ps->fuel(1, Vector2f(0, 0), Vector2f(0, GAME_WORLD_X));
     pcount = 0;
-    ps->fuel(1, Vector2f(0, 0), Vector2f(0, GAME_WORLD_X));
   }
   playerWeapon->Update(deltaSeconds);
   ps->update(deltaSeconds);
@@ -296,6 +274,7 @@ void GameUpdate(float deltaSeconds) {
                        to_string(playerlives));
 }
 
+static Sprite Explosions[16];
 void GameRender() {
   window->draw(*ps);
   playerWeapon->Render();
@@ -310,11 +289,9 @@ void GameRender() {
 
   for (auto &e : enemies) {
     window->draw(*e->spr);
-    if (e->alive == false) {
-      ExplosionSprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y);
-      window->draw(*ExplosionSprite);
-      explosion->play();
-    }
+  }
+  for (auto &e : Explosions) {
+    window->draw(e);
   }
 
   if (PowerChance >= 30) {
@@ -333,5 +310,29 @@ void ResetGame() {
     delete e;
   }
   enemies.clear();
-  fadeBGM(soundbuffers[MAINBGM]);
+  fadeBGM(bgmbuffers[MAINBGM]);
+}
+
+void Explode(Vector2f pos) {
+  for (auto &e : Explosions) {
+    if (e.getPosition().y < -100.0f) {
+      e.setPosition(pos);
+      e.setTexture(*textures[Explosion]);
+      e.setOrigin(e.getLocalBounds().height / 2, e.getLocalBounds().height / 2);
+      break;
+    }
+  }
+}
+
+void UpdateExplosions(float dt) {
+  for (auto &e : Explosions) {
+    if (e.getPosition().y > -100.0f) {
+      e.setRotation(e.getRotation() + dt);
+      e.setScale(e.getScale() * (0.8f * (1.0f - dt)));
+      if (e.getScale().x < 0.05f) {
+        e.setScale(1.0f, 1.0f);
+        e.setPosition(0, -128.0f);
+      }
+    }
+  }
 }

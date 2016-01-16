@@ -18,9 +18,12 @@ Vector2f scaledGameOffsetNormal;
 RenderWindow *window;
 View gameView;
 Gamestates state = Gamestates::Start;
-SoundBuffer *soundbuffers[SOUND_COUNT];
+
+SoundBuffer *bgmbuffers[MUSIC_COUNT];
+SoundBuffer *sfxbuffers[SFX_COUNT];
 Sound *bgm1;
 Sound *bgm2;
+
 Texture *textures[TEX_COUNT];
 Font *gameFont;
 Text pausedText;
@@ -75,8 +78,12 @@ void Loadcontent() {
     }
   }
   for (size_t i = 0; i < MUSIC_COUNT; i++) {
-    soundbuffers[i] = new SoundBuffer();
-    soundbuffers[i]->loadFromFile(filepath + musicNames[i]);
+    bgmbuffers[i] = new SoundBuffer();
+    bgmbuffers[i]->loadFromFile(filepath + musicNames[i]);
+  }
+  for (size_t i = 0; i < SFX_COUNT; i++) {
+    sfxbuffers[i] = new SoundBuffer();
+    sfxbuffers[i]->loadFromFile(filepath + soundNames[i]);
   }
   bgm1 = new Sound();
   bgm2 = new Sound();
@@ -94,10 +101,15 @@ void Unload() {
   delete bgm2;
   bgm1 = nullptr;
   bgm2 = nullptr;
-  for (auto &t : soundbuffers) {
+  for (auto &t : bgmbuffers) {
     delete t;
     t = nullptr;
   }
+  for (auto &t : sfxbuffers){
+    delete t;
+    t = nullptr;
+  }
+
   delete gameFont;
 
   gameFont = nullptr;
@@ -252,7 +264,7 @@ int main() {
   creditsMenu.items.push_back(new MenuItem("", *gameFont));
   creditsMenu.items.push_back(new MenuButton("Back", *gameFont, []() { state = Start; }));
 
-  fadeBGM(soundbuffers[AMBIENTBGM]);
+  fadeBGM(bgmbuffers[AMBIENTBGM]);
   previous = high_resolution_clock::now();
 
   while (window->isOpen()) {

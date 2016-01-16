@@ -52,10 +52,10 @@ static const string textureNames[TEX_COUNT]{"img/spaceship1.png",
                                             "img/missile.png",
                                             "img/explosion.png"};
 
-enum SOUND { MISSILE, EXPLOSION, LASER, SOUND_COUNT };
+enum SOUND { MISSILE, EXPLOSION, LASER, SHOOT, SFX_COUNT };
 
-static const string soundNames[SOUND_COUNT]{"sounds/missile.wav", "sounds/explosion.wav",
-                                            "sounds/laser.wav"};
+static const string soundNames[SFX_COUNT]{"sounds/missile.wav", "sounds/explosion.wav",
+                                            "sounds/laser.wav","sounds/shoot.wav" };
 
 
 enum MUSIC { AMBIENTBGM, MAINBGM, MAINBGM2, BOSSBGM, MUSIC_COUNT };
