@@ -180,7 +180,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Astral_Insanity_x86"
         "ProductCode" = "8:{8FA1C23D-07FE-4966-BBEB-ED289EBC0D46}"
-        "PackageCode" = "8:{7DBD842B-D8A1-4772-8562-7C1D662AC592}"
+        "PackageCode" = "8:{79A2E443-732C-4784-B126-CFCCB4590C78}"
         "UpgradeCode" = "8:{026350CA-0337-4D9A-9A6C-EBF413E2DBC2}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -300,6 +300,34 @@
         }
         "Shortcut"
         {
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_4D37DE7798264F339AA3DF07390A7F64"
+            {
+            "Name" = "8:Astral Insanity x86"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_B3C9279503D34C66B466CC96A129656C"
+            "Folder" = "8:_3D9134F861304ED3BD0EB2FFC8D4CBA7"
+            "WorkingFolder" = "8:_09C22815D2DF40599249DE2B38B1C1D3"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_BB0AC6A05EC04E0EA4E53D5B9F704576"
+            {
+            "Name" = "8:Astral Insanity x86"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_B3C9279503D34C66B466CC96A129656C"
+            "Folder" = "8:_9B83000861F9476D93CAA6312F50CE45"
+            "WorkingFolder" = "8:_09C22815D2DF40599249DE2B38B1C1D3"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
         }
         "UserInterface"
         {
@@ -729,7 +757,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_B3C9279503D34C66B466CC96A129656C"
             {
-            "SourcePath" = "8:"
+            "SourcePath" = "8:..\\..\\bin\\Win32_Release\\advanced-minigame.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_09C22815D2DF40599249DE2B38B1C1D3"

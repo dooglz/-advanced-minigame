@@ -34,28 +34,28 @@ enum TEX {
   TEX_COUNT
 };
 
-const string filepath = "..\\res/";
+extern string filepath;
 static const string textureNames[TEX_COUNT]{"img/spaceship1.png",
                                             "img/spaceship2.png",
                                             "img/spaceship3.png",
-                                            "img/Spaceship-Drakir1.png",
-                                            "img/Spaceship-Drakir2.png",
-                                            "img/Spaceship-Drakir3.png",
-                                            "img/Spaceship-Drakir4.png",
-                                            "img/Spaceship-Drakir5.png",
-                                            "img/Spaceship-Drakir6.png",
-                                            "img/Spaceship-Drakir7.png",
+                                            "img/spaceship-drakir1.png",
+                                            "img/spaceship-drakir2.png",
+                                            "img/spaceship-drakir3.png",
+                                            "img/spaceship-drakir4.png",
+                                            "img/spaceship-drakir5.png",
+                                            "img/spaceship-drakir6.png",
+                                            "img/spaceship-drakir7.png",
                                             "img/bullet.png",
-                                            "img/Background.png",
-                                            "img/Life.png",
-                                            "img/Shield.png",
-                                            "img/Missile.png",
-                                            "img/Explosion.png"};
+                                            "img/background.png",
+                                            "img/life.png",
+                                            "img/shield.png",
+                                            "img/missile.png",
+                                            "img/explosion.png"};
 
 enum SOUND { MISSILE, EXPLOSION, LASER, SOUND_COUNT };
 
 static const string soundNames[SOUND_COUNT]{
-  "sounds/Missile.wav", "sounds/Explosion.wav", "sounds/laser.wav"
+  "sounds/missile.wav", "sounds/explosion.wav", "sounds/laser.wav"
 };
 
 #ifdef _DEBUG

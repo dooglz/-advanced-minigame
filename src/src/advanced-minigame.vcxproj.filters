@@ -22,6 +22,9 @@
     <Filter Include="Source Files\Resource Files\fonts">
       <UniqueIdentifier>{029fabb1-1611-456b-ab85-7bbe454b389f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Resource Files\music">
+      <UniqueIdentifier>{6e5332b3-7c5a-4ed9-9caa-d94cf2db00df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -62,27 +65,50 @@
     <ClInclude Include="weapon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\res\img\Spaceship-Drakir7.png">
+    <Media Include="..\res\music\orbitals.mp3">
+      <Filter>Source Files\Resource Files\music</Filter>
+    </Media>
+    <Media Include="..\res\music\robotix.mp3">
+      <Filter>Source Files\Resource Files\music</Filter>
+    </Media>
+    <Media Include="..\res\music\starflake.mp3">
+      <Filter>Source Files\Resource Files\music</Filter>
+    </Media>
+    <Media Include="..\res\music\synth5.mp3">
+      <Filter>Source Files\Resource Files\music</Filter>
+    </Media>
+    <Media Include="..\res\sounds\explosion.wav">
+      <Filter>Source Files\Resource Files\sounds</Filter>
+    </Media>
+    <Media Include="..\res\sounds\laser.wav">
+      <Filter>Source Files\Resource Files\sounds</Filter>
+    </Media>
+    <Media Include="..\res\sounds\missile.wav">
+      <Filter>Source Files\Resource Files\sounds</Filter>
+    </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\res\img\background.png">
       <Filter>Source Files\Resource Files\img</Filter>
     </Image>
-    <Image Include="..\res\img\Background.png">
+    <Image Include="..\res\img\bullet.png">
       <Filter>Source Files\Resource Files\img</Filter>
     </Image>
-    <Image Include="..\res\img\Bullet.png">
+    <Image Include="..\res\img\explosion.png">
       <Filter>Source Files\Resource Files\img</Filter>
     </Image>
-    <Image Include="..\res\img\Explosion.png">
+    <Image Include="..\res\img\life.png">
       <Filter>Source Files\Resource Files\img</Filter>
     </Image>
-    <Image Include="..\res\img\Life.png">
+    <Image Include="..\res\img\missile.png">
       <Filter>Source Files\Resource Files\img</Filter>
     </Image>
-    <Image Include="..\res\img\Missile.png">
-      <Filter>Source Files\Resource Files\img</Filter>
-    </Image>
-    <Image Include="..\res\img\Shield.png">
+    <Image Include="..\res\img\shield.png">
       <Filter>Source Files\Resource Files\img</Filter>
     </Image>
     <Image Include="..\res\img\spaceship1.png">
@@ -94,38 +120,30 @@
     <Image Include="..\res\img\spaceship3.png">
       <Filter>Source Files\Resource Files\img</Filter>
     </Image>
-    <Image Include="..\res\img\Spaceship-Drakir1.png">
+    <Image Include="..\res\img\spaceship-drakir1.png">
       <Filter>Source Files\Resource Files\img</Filter>
     </Image>
-    <Image Include="..\res\img\Spaceship-Drakir2.png">
+    <Image Include="..\res\img\spaceship-drakir2.png">
       <Filter>Source Files\Resource Files\img</Filter>
     </Image>
-    <Image Include="..\res\img\Spaceship-Drakir3.png">
+    <Image Include="..\res\img\spaceship-drakir3.png">
       <Filter>Source Files\Resource Files\img</Filter>
     </Image>
-    <Image Include="..\res\img\Spaceship-Drakir4.png">
+    <Image Include="..\res\img\spaceship-drakir4.png">
       <Filter>Source Files\Resource Files\img</Filter>
     </Image>
-    <Image Include="..\res\img\Spaceship-Drakir5.png">
+    <Image Include="..\res\img\spaceship-drakir5.png">
       <Filter>Source Files\Resource Files\img</Filter>
     </Image>
-    <Image Include="..\res\img\Spaceship-Drakir6.png">
+    <Image Include="..\res\img\spaceship-drakir6.png">
+      <Filter>Source Files\Resource Files\img</Filter>
+    </Image>
+    <Image Include="..\res\img\spaceship-drakir7.png">
       <Filter>Source Files\Resource Files\img</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Media Include="..\res\Sounds\Explosion.wav">
-      <Filter>Source Files\Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="..\res\Sounds\laser.wav">
-      <Filter>Source Files\Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="..\res\Sounds\Missile.wav">
-      <Filter>Source Files\Resource Files\sounds</Filter>
-    </Media>
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="..\res\fonts\AmericanCaptain.ttf">
+    <Font Include="..\res\fonts\americancaptain.ttf">
       <Filter>Source Files\Resource Files\fonts</Filter>
     </Font>
   </ItemGroup>

@@ -186,7 +186,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Astral_Insanity_x64"
         "ProductCode" = "8:{E005D872-6B44-4B03-9149-E9BB3DD2FD42}"
-        "PackageCode" = "8:{C49761B6-2FFE-45BD-BCC3-C0670441BD9C}"
+        "PackageCode" = "8:{096B4981-97EA-480D-886D-119AC20A7474}"
         "UpgradeCode" = "8:{2FB3608C-7B2F-4BCD-AE6D-8704C0B968D4}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -306,6 +306,34 @@
         }
         "Shortcut"
         {
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_89CCAAF9AB684D728565C2944A285EFD"
+            {
+            "Name" = "8:Astral Insanity x64"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_3F355A57901E4409B53C0197EB7382F2"
+            "Folder" = "8:_8321DCC70B6046FB839BF7E23DCF300C"
+            "WorkingFolder" = "8:_5352139AEC374661A0CE7270E9B9B74F"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_FE3C58339B1E4F879CF757A1AFD00C3D"
+            {
+            "Name" = "8:Astral Insanity x64"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_3F355A57901E4409B53C0197EB7382F2"
+            "Folder" = "8:_48C8023B2C9B4443B9688E04EA349924"
+            "WorkingFolder" = "8:_5352139AEC374661A0CE7270E9B9B74F"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
         }
         "UserInterface"
         {
@@ -735,7 +763,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3F355A57901E4409B53C0197EB7382F2"
             {
-            "SourcePath" = "8:"
+            "SourcePath" = "8:..\\..\\bin\\x64_Release\\advanced-minigame.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_5352139AEC374661A0CE7270E9B9B74F"

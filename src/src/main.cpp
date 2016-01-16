@@ -6,9 +6,10 @@
 #include <chrono>
 #include <iostream>
 #include <thread>
+#include <fstream>
 
 using namespace chrono;
-
+string filepath;
 Vector2u scaledGameResolution;
 Vector2f scaledGameResolutionNormal;
 Vector2u scaledGameOffset;
@@ -171,7 +172,16 @@ void Render() {
 }
 
 int main() {
-
+  //fid res dir
+  static const std::string filedirs[] = {"", "../", "res/", "../res/"};
+  for (const auto s : filedirs) {
+    ifstream inFile((s + textureNames[0]).c_str(), ifstream::in);
+    if (inFile.good()) {
+      filepath  = s;
+      inFile.close();
+      break;
+    }
+  }
   Loadcontent();
   window = new RenderWindow(VideoMode(DEFAULT_WINDOW_RESOULUTION), "Advanced Minigame");
   window->setVerticalSyncEnabled(VSYNC);

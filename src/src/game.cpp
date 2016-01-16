@@ -213,24 +213,24 @@ void GameUpdate(float deltaSeconds) {
 
 
   if (playerSprite->getGlobalBounds().intersects(powersprite->getGlobalBounds())) {
-	  if (powersprite->getTexture() == textures[12]) {
-		  playerlives += 1;
-		  powersprite->setPosition(670, -128);
-	  }
-	  else if (powersprite->getTexture() == textures[13]) {
-		  shielded = true;
-		  powersprite->setPosition(670, -128);
-	  }
-	  else if (powersprite->getTexture() == textures[14]) {
+    if (powersprite->getTexture() == textures[12]) {
+      playerlives += 1;
+      powersprite->setPosition(670, -128);
+    }
+    else if (powersprite->getTexture() == textures[13]) {
+      shielded = true;
+      powersprite->setPosition(670, -128);
+    }
+    else if (powersprite->getTexture() == textures[14]) {
 
-		  while (powertime >= 0) {
-			  playerWeapon->reloadTime = 0;
-			  powertime--;
-			  break;
-		  }
+      while (powertime >= 0) {
+        playerWeapon->reloadTime = 0;
+        powertime--;
+        break;
+      }
 
-		  powersprite->setPosition(670, -128);
-	  }
+      powersprite->setPosition(670, -128);
+    }
   }
 
 
@@ -275,7 +275,7 @@ void GameUpdate(float deltaSeconds) {
 
 
   if (powertime == 0) {
-	  powertime = 1000;
+    powertime = 1000;
   }
    if (playerlives == 0) {
      state = Gamestates::Credits;
@@ -299,10 +299,10 @@ void GameRender() {
   playerWeapon->Render();
   
   if (shielded == true) {	  
-	  shield->setPosition(playerSprite->getPosition().x + 12,playerSprite->getPosition().y+10);
-	  shield->setFillColor(Color::Transparent);
-	  shield->setOutlineThickness(5);
-	  shield->setOutlineColor(Color::Blue);
+    shield->setPosition(playerSprite->getPosition().x + 12,playerSprite->getPosition().y+10);
+    shield->setFillColor(Color::Transparent);
+    shield->setOutlineThickness(5);
+    shield->setOutlineColor(Color::Blue);
   }
   window->draw(*playerSprite);
 
@@ -310,11 +310,11 @@ void GameRender() {
 
   for (auto &e : enemies) {
     window->draw(*e->spr);
-	if (e->alive == false) {
-		ExplosionSprite->setPosition(e->spr->getPosition().x,e->spr->getPosition().y);
-			window->draw(*ExplosionSprite);
-			explosion->play();
-	}
+  if (e->alive == false) {
+    ExplosionSprite->setPosition(e->spr->getPosition().x,e->spr->getPosition().y);
+      window->draw(*ExplosionSprite);
+      explosion->play();
+  }
   }
 
   if (PowerChance >= 30) {
