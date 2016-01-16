@@ -55,22 +55,20 @@ void LoadGameContent() {
   fire = new Sound();
   explosion = new Sound();
   laser = new Sound();
-  shield = new CircleShape(20,120);
-  
+  shield = new CircleShape(20, 120);
 
   fireBuffer = new SoundBuffer();
   explosionBuffer = new SoundBuffer();
   laserBuffer = new SoundBuffer();
 
-  fireBuffer->loadFromFile(filepath+soundNames[MISSILE]);
+  fireBuffer->loadFromFile(filepath + soundNames[MISSILE]);
   explosionBuffer->loadFromFile(filepath + soundNames[EXPLOSION]);
   laserBuffer->loadFromFile(filepath + soundNames[LASER]);
 
- 
   fire->setBuffer(*fireBuffer);
   explosion->setBuffer(*explosionBuffer);
   laser->setBuffer(*laserBuffer);
- 
+
   fire->setMinDistance(0.3f);
   playerSprite = new Sprite();
   playerSprite->setTexture(*textures[0]);
@@ -211,17 +209,14 @@ void GameUpdate(float deltaSeconds) {
 
   int lifespan = 1000;
 
-
   if (playerSprite->getGlobalBounds().intersects(powersprite->getGlobalBounds())) {
     if (powersprite->getTexture() == textures[12]) {
       playerlives += 1;
       powersprite->setPosition(670, -128);
-    }
-    else if (powersprite->getTexture() == textures[13]) {
+    } else if (powersprite->getTexture() == textures[13]) {
       shielded = true;
       powersprite->setPosition(670, -128);
-    }
-    else if (powersprite->getTexture() == textures[14]) {
+    } else if (powersprite->getTexture() == textures[14]) {
 
       while (powertime >= 0) {
         playerWeapon->reloadTime = 0;
@@ -232,7 +227,6 @@ void GameUpdate(float deltaSeconds) {
       powersprite->setPosition(670, -128);
     }
   }
-
 
   for (size_t i = 0; i < enemies.size(); i++) {
     auto e = enemies[i];
@@ -272,13 +266,11 @@ void GameUpdate(float deltaSeconds) {
     }
   }
 
-
-
   if (powertime == 0) {
     powertime = 1000;
   }
-   if (playerlives == 0) {
-     state = Gamestates::Credits;
+  if (playerlives == 0) {
+    state = Gamestates::Credits;
   }
   static int pcount = 0;
   ++pcount;
@@ -297,24 +289,22 @@ void GameUpdate(float deltaSeconds) {
 void GameRender() {
   window->draw(*ps);
   playerWeapon->Render();
-  
-  if (shielded == true) {	  
-    shield->setPosition(playerSprite->getPosition().x + 12,playerSprite->getPosition().y+10);
+
+  if (shielded == true) {
+    shield->setPosition(playerSprite->getPosition().x + 12, playerSprite->getPosition().y + 10);
     shield->setFillColor(Color::Transparent);
     shield->setOutlineThickness(5);
     shield->setOutlineColor(Color::Blue);
   }
   window->draw(*playerSprite);
 
-
-
   for (auto &e : enemies) {
     window->draw(*e->spr);
-  if (e->alive == false) {
-    ExplosionSprite->setPosition(e->spr->getPosition().x,e->spr->getPosition().y);
+    if (e->alive == false) {
+      ExplosionSprite->setPosition(e->spr->getPosition().x, e->spr->getPosition().y);
       window->draw(*ExplosionSprite);
       explosion->play();
-  }
+    }
   }
 
   if (PowerChance >= 30) {

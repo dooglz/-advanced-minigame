@@ -54,13 +54,11 @@ void EnemyShip::Update(float deltaSeconds) {
     alive = false;
   } else if (spr->getGlobalBounds().intersects(playerSprite->getGlobalBounds())) {
     alive = false;
-	if (shielded == false) {
-		--playerlives;
-	}
-	else if (shielded == true) {
-		shielded = false;
-	}
-
+    if (shielded == false) {
+      --playerlives;
+    } else if (shielded == true) {
+      shielded = false;
+    }
   }
 }
 

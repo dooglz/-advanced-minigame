@@ -20,6 +20,7 @@ Gamestates state = Gamestates::Start;
 
 Texture *textures[TEX_COUNT];
 Font *gameFont;
+Text pausedText;
 Menu mainMenu;
 Menu creditsMenu;
 Menu controlsMenu;
@@ -58,7 +59,11 @@ void Resize() {
 void Loadcontent() {
   gameFont = new Font();
   gameFont->loadFromFile(filepath + "/fonts/AmericanCaptain.ttf");
-
+  pausedText.setFont(*gameFont);
+  pausedText.setPosition(GAME_WORLD_X / 2, GAME_WORLD_Y / 2);
+  pausedText.setCharacterSize(64);
+  pausedText.setColor(Color::White);
+  pausedText.setString("PAUSED");
   for (size_t i = 0; i < 16; i++) {
     textures[i] = new Texture();
     if (!textures[i]->loadFromFile(filepath + textureNames[i])) {
@@ -125,6 +130,12 @@ void Update() {
       break;
     case Credits:
       break;
+    case Pause:
+      if (e.type == Event::KeyPressed && e.key.code == Keyboard::P) {
+        state = Game;
+        return;
+      }
+      break;
     default:
       break;
     }
@@ -164,6 +175,11 @@ void Render() {
   case Credits:
     creditsMenu.Render();
     break;
+  case Pause:
+    GameRender();
+    window->draw(pausedText);
+    break;
+
   default:
     break;
   }
@@ -172,12 +188,12 @@ void Render() {
 }
 
 int main() {
-  //fid res dir
+  // fid res dir
   static const std::string filedirs[] = {"", "../", "res/", "../res/"};
   for (const auto s : filedirs) {
     ifstream inFile((s + textureNames[0]).c_str(), ifstream::in);
     if (inFile.good()) {
-      filepath  = s;
+      filepath = s;
       inFile.close();
       break;
     }
@@ -193,7 +209,10 @@ int main() {
 
   mainMenu = Menu();
   mainMenu.items.push_back(new MenuItem(GAME_NAME, *gameFont));
-  mainMenu.items.push_back(new MenuButton("Start Game", *gameFont, []() { state = Game; }));
+  mainMenu.items.push_back(new MenuButton("Start Game", *gameFont, []() {
+    ResetGame();
+    state = Game;
+  }));
   mainMenu.items.push_back(new MenuButton("Controls", *gameFont, []() { state = Controls; }));
   mainMenu.items.push_back(new MenuButton("Credits", *gameFont, []() { state = Credits; }));
   mainMenu.items.push_back(new MenuButton("Exit", *gameFont, []() { window->close(); }));

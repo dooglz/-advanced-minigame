@@ -58,7 +58,7 @@ void weps::Blaster::Update(float deltaSeconds) {
         if (e->spr->getGlobalBounds().intersects(b->getGlobalBounds())) {
           e->alive = false;
           b->setPosition(0, -128.0f);
-		  score += 100;
+          score += 100;
         }
       }
     } else {

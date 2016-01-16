@@ -180,7 +180,6 @@
     <ClInclude Include="game.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="Particles.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="weapon.h" />
   </ItemGroup>
   <ItemGroup>

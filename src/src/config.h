@@ -10,7 +10,7 @@ using namespace std;
 #define GAME_WORLD_Y 1000
 #define GAME_RESOULUTION GAME_WORLD_X, GAME_WORLD_Y
 
-#define GAME_NAME "SPACE WARS"
+#define GAME_NAME "Astral Insanity"
 
 #define VSYNC true
 
@@ -54,9 +54,8 @@ static const string textureNames[TEX_COUNT]{"img/spaceship1.png",
 
 enum SOUND { MISSILE, EXPLOSION, LASER, SOUND_COUNT };
 
-static const string soundNames[SOUND_COUNT]{
-  "sounds/missile.wav", "sounds/explosion.wav", "sounds/laser.wav"
-};
+static const string soundNames[SOUND_COUNT]{"sounds/missile.wav", "sounds/explosion.wav",
+                                            "sounds/laser.wav"};
 
 #ifdef _DEBUG
 #if defined(_WIN32) || defined(_WIN64)

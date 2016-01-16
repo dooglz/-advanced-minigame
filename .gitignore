@@ -76,3 +76,4 @@ src/build/
 src/bin/
 *.msi
 *.exe
+*.cppcheck
