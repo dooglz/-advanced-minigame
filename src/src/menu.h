@@ -9,10 +9,13 @@ using namespace sf;
 typedef void (*callback)(void);
 
 struct MenuItem {
+  bool selectable;
+  bool isSelected;
   MenuItem(string name, Font &gameFont);
   Text text;
   virtual void Update(Vector2f position);
   virtual void Render();
+  virtual void Activate(){};
 };
 
 struct MenuButton : public MenuItem {
@@ -21,6 +24,7 @@ struct MenuButton : public MenuItem {
   void Update(Vector2f position);
   void Render();
   RectangleShape rectangle;
+  void Activate();
 };
 
 struct Menu {
@@ -28,4 +32,6 @@ struct Menu {
   vector<MenuItem *> items;
   void Update();
   void Render();
+  void MenuHadleEvent(Event &e);
+  int selected;
 };

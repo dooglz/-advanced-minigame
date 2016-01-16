@@ -107,7 +107,8 @@ void Update() {
     case Event::KeyPressed:
       switch (e.key.code) {
       case Keyboard::Escape:
-        window->close();
+        state = Start;
+        return;
         break;
       case Keyboard::B:
         BREAKPOINT
@@ -124,11 +125,13 @@ void Update() {
       GameHandleEvent(e);
       break;
     case Start:
-      // MenuHadleEvent(e);
+       mainMenu.MenuHadleEvent(e);
       break;
     case Controls:
+      controlsMenu.MenuHadleEvent(e);
       break;
     case Credits:
+      creditsMenu.MenuHadleEvent(e);
       break;
     case Pause:
       if (e.type == Event::KeyPressed && e.key.code == Keyboard::P) {
