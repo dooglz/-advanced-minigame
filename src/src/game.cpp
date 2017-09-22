@@ -19,7 +19,7 @@ void fadeBGM(SoundBuffer *b);
 extern SoundBuffer *bgmbuffers[SFX_COUNT];
 
 Text *scoreText;
-Text *pausedText;
+//Text *pausedText;
 ParticleSystem *ps;
 bool shielded;
 CircleShape shield;

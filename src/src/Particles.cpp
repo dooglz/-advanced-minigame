@@ -1,4 +1,4 @@
-#include "particles.h"
+#include "Particles.h"
 
 /************************************************************/
 ParticleSystem::ParticleSystem(sf::Vector2u canvasSize)

@@ -1,5 +1,6 @@
 #include "enemy.h"
 #include <stack>
+#include <math.h>
 extern stack<Sprite *> unusedSprites;
 extern Texture *textures[TEX_COUNT];
 extern Sprite *playerSprite;

@@ -8,6 +8,7 @@
 #include <iostream>
 #include <thread>
 #include <fstream>
+#include <math.h>
 
 using namespace chrono;
 string filepath;
